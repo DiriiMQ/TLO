@@ -1,0 +1,19 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <video controls autoplay name="media">
+            <source src="http://localhost:3000/static/video/CK_1_2_2.mp4" type="video/mp4">
+        </video>
+    </body>
+    <script>
+        setTimeout(() => {
+            $('video').on('ended', () => {
+                console.log('ok');
+            })
+        }, 40000);
+        console.log($('video')[0].ended)
+    </script>
+</html>

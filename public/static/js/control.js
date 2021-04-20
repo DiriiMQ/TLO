@@ -884,6 +884,10 @@ const round_four = {
 		enabled($("#true_4_btn"));enabled($("#false_4_btn"));enabled($("#waitttt_4_btn"));}, round_four.time[curpack]*1000);
 	},
 	wait:function(){
+		$("#choosevd").empty()
+		$("#choosevd").append($('<option',{
+			text: '-'
+		}))
 		send_mess("controller","contestants","wait");
 		send_mess("controller","viewer","wait");
 	},
@@ -897,20 +901,19 @@ const round_four = {
 			$("#con"+parseInt(parseInt(curcon)+1)+"_score").html(contestants[curcon].score);
 		}
 		else{
+			// b correct and a wrong, a -= x, b += x, keme sao
 			update_score(round_four.taker,score)
 			$("#con"+parseInt(parseInt(round_four.taker)+1)+"_score").html(contestants[round_four.taker].score);
-			if(!round_four.star){
-				score=-score;
-				update_score(curcon,score)
-				$("#con"+parseInt(parseInt(curcon)+1)+"_score").html(contestants[curcon].score);
-			}
+			score=-score;
+			update_score(curcon,score)
+			$("#con"+parseInt(parseInt(curcon)+1)+"_score").html(contestants[curcon].score);
 		}
 		send_mess("controller","contestants","correct");
 		send_mess("controller","viewer","correct");
 	},
 	wrong:function(){
 		let score=0;
-		if(round_four.taker==-1){
+		if(round_four.taker==-1){ // click wrong button after 5s waiting 
 			if(round_four.star){
 				score=parseInt(-round_four.scs[curpack]);
 				update_score(curcon,score)
@@ -921,6 +924,11 @@ const round_four = {
 			score=parseInt(-round_four.scs[curpack]/2);
 			update_score(round_four.taker,score)
 			$("#con"+parseInt(parseInt(round_four.taker)+1)+"_score").html(contestants[round_four.taker].score);
+			if(round_four.star){
+				score=parseInt(-round_four.scs[curpack]);
+				update_score(curcon, score);
+				$("#con"+parseInt(parseInt(curcon)+1)+"_score").html(contestants[curcon].score);
+			}
 		}
 		send_mess("controller","contestants","wrong");
 		send_mess("controller","viewer","wrong");

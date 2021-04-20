@@ -257,8 +257,28 @@ function showpack(){
 	sfx['showpack'].play().catch(err => {})
 	},5000);
 }
+
+function check_vid(popup){
+	var check_stt_vid = 0;
+	// console.log('ok')
+	// popup.close();
+	$('video', popup.document).on('ended', () => {
+		popup.close();
+		check_stt_vid = 1;
+	})
+	if(check_stt_vid == 0){
+		setTimeout(() => {
+			check_vid(popup);
+		}, 1000);
+	}
+}
+
 function loadVid() {
-  window.open(`/static/video/${curmatch}_${parseInt(curcon)+1}_${parseInt(curpack)+1}_${quesid+1}.mp4`,"_blank");
+	var popup = window.open(`/static/video/${curmatch}_${parseInt(curcon)+1}_${parseInt(curpack)+1}_${quesid+1}.mp4`,"_blank");
+	setTimeout(() => {
+		// console.log($('video', popup.document));
+		check_vid(popup);
+	}, 1000);
 }
 
 socket.on("message",(msg) => {
