@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="uft-8">
+		<title>Round 1</title>
+	<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/static/css/font-awesome.min.css">
+	<link rel="stylesheet" href="/static/css/animate.min.css">
+	<script type="text/javascript" src="/static/js/socket.io.min.js"></script>
+	</head>
+	<body>
+		<div id="animate" class="animated slideInLeft" style="font-size: 90px;font-weight: bold;text-align: center;font-family:sans-serif;">Khởi Động</div>
+		<div class="container">
+		<div class="panel panel-default" 
+		style="width: 1000px;margin-left: 0px;margin-top: 50px;border-radius: 20px;height: 200px;float: left;">
+		<div id="panel-heading" style="clear: both;margin-bottom:20px;">
+			<ul class="nav nav-tabs nav-justified">
+				<li class="active" style="width: 250px;">
+					<a href="#" id="contestant1"></a>
+				</li>
+				<li style="width: 250px;">
+					<a href="#"  id="contestant2"></a>
+				</li>
+				<li style="width: 250px;">
+					<a href="#"  id="contestant3"></a>
+				</li>
+				<li style="width: 250px;">
+					<a href="#"  id="contestant4"></a>
+				</li>
+			</ul>
+		</div>
+		<div id="panel-body">
+			<div id="question" style="margin-left: 50px;margin-right: 50px;height:100px">Question</div>
+		</div>
+		<div id="panel-footer" style="height: 20px;">
+			
+			<div id="timer_slider" 
+			style="background-color: #0099ff;width: 0px;height: 10px;margin-top: 10px;margin-left: 50px;margin-right: 50px;"></div>
+		</div>
+	</div>
+	<div class="panel panel-default" 
+		style="float: left;width: 100px;margin-left: 20px;margin-top: 120px;font-size: 40px;font-weight: bold;color: #0066ff;">
+		<div id="score" style="text-align: center;"></div>
+<script src="/static/js/init.js"></script>
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/1_contestant.js"></script>
+<script src="/static/js/four.js"></script>
+</body>
+</html>

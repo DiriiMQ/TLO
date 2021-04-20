@@ -1,0 +1,15 @@
+<html>
+<head><title>Test</title>
+</head>
+<body>
+	<div id="t">Tesssssssssssssst</div>
+	<button id="btn">test</button>
+	<script>
+		$("#btn").click(function(){
+			setTimeout(function(){$(document).getElementById('t').setAttribute("style","color:#ff9900;");},5000)
+		});
+	</script>
+
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+</body>
+</html>

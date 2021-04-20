@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Hello world</title>
+	<link rel="stylesheet" href="https://daneden.github.io/animate.css/animate.min.css">
+	<meta charset="utf-8">
+</head>
+<body>
+	<div id="animate" class="animated flipInX">
+		<center><h1>Chatroom</h1></center>
+	</div>
+	<div id="message"></div>
+	<div id="send">
+		<form action="javascript: __send__()">
+			<input type="text" id="content">
+			<button type="submit">Send</button>
+		</form>
+	</div>
+</body>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+	var socket = io.connect(`http://${document.domain}:${location.port}`);
+	socket.on("connect", function() {
+		console.log("Connected.");
+	});
+	socket.on("message", function(message) {
+		var div = document.getElementById("message");
+		div.innerHTML += message;
+	});
+
+	function sendMessage(message) {
+		socket.send(message);
+	}
+
+	function __send__() {
+		if(document.getElementById("content").value != ""){
+		var msg = "<b>+</b> " + decodeURIComponent(escape(document.getElementById("content").value)) + "<br>";
+		document.getElementById("content").value = "";
+		sendMessage(msg);
+	}
+	}
+
+	function add(x) {
+		$('#animate').removeClass().addClass(x + ' animated').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+			$(this).removeClass();
+		});
+	};
+</script>
+</html>

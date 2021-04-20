@@ -1,0 +1,54 @@
+::-webkit-input-placeholder {
+   color: white;
+}
+ 
+:-moz-placeholder { /* Firefox 18- */
+   color: white;  
+}
+ 
+::-moz-placeholder {  /* Firefox 19+ */
+   color: white;
+}
+ 
+:-ms-input-placeholder {  
+   color: white;  
+}
+/*body{
+	background: linear-gradient(#000000,#595959);
+}*/
+/*div{
+	clear: both;
+}*/
+
+/* The side navigation menu */
+.sidenav {
+	float: right;
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Stay on top */
+    overflow-x: hidden; /* Disable horizontal scroll */
+    transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+}
+
+.sidenav .close:hover{
+	opacity: 0.7;
+}
+
+.sidenav-content{
+	height: inherit;
+    overflow-x: hidden; /* Disable horizontal scroll */
+	float: left;
+	transition: 0.5s;
+	width: 360px;
+}
+
+.sidenav .close{
+	float: left;
+	opacity: 0.3;
+	height: inherit;
+	width: 40px;
+	font-size: 40px;
+	line-height: 330px; 
+	text-align: center;
+	color: white;
+	background-color: #4d4d4d;
+}

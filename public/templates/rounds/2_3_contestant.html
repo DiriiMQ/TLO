@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="uft-8">
+		<title>Round 2</title>
+	<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/static/css/font-awesome.min.css">
+	<link rel="stylesheet" href="/static/css/animate.min.css">
+	<script type="text/javascript" src="/static/js/socket.io.min.js"></script>
+	<!--<link rel="stylesheet" href="C:/FlaskApp/ThapLuaOlympia/TLOv2/static/bootstrap-3.3.6/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="C:/FlaskApp/ThapLuaOlympia/TLOv2/static/awesome/css/font-awesome.css">
+	<link rel="stylesheet" type="text/css" href="C:/FlaskApp/ThapLuaOlympia/TLOv2/templates/control.css">-->
+	</head>
+	<body style="user-select: none">
+		<div id="animate" class="animated slideInLeft" style="font-size: 90px;font-weight: bold;text-align: center;font-family:sans-serif;">Vượt chướng ngại vật</div>
+		<div class="container">
+		<div id="hn" style="height: 300px;">
+			<div id="hn0" style="width: 1000px;float:left;margin-top: 35px;"></div>
+			<div id="hn1" style="width: 1000px;float:left;margin-top: 10px;"></div>
+			<div id="hn2" style="width: 1000px;float:left;margin-top: 10px;"></div>
+			<div id="hn3" style="width: 1000px;float:left;margin-top: 10px;"></div>
+		</div>
+		<div style="width:1024px;height:576px;margin-top: 50px;margin-left:58px;float: left;">
+			<img id="cnvimg" style="position: absolute;" width="1024px" height="576px">
+			<div style="position: absolute;">
+				<div id="cnv1" style="width:256px;height: 144px;position: absolute;background-color: black;margin-top: 0px;margin-left: 0px;font-size: 100px;line-height: 144px;text-align: center;color: white;">1</div>
+				<div id="cnv2" style="width:256px;height: 144px;position: absolute;background-color: black;margin-top: 0px;margin-left: 256px;"></div>
+				<div id="cnv3" style="width:256px;height: 144px;position: absolute;background-color: black;margin-top: 0px;margin-left: 512px;"></div>
+				<div id="cnv4" style="width:256px;height: 144px;position: absolute;background-color: black;margin-top: 0px;margin-left: 768px;font-size: 100px;line-height: 144px;text-align: center;color: white;">2</div>
+				<div id="cnv5" style="width:256px;height: 144px;position: absolute;background-color: black;margin-top: 144px;margin-left: 0px;"></div>
+				<div id="cnv6" style="width:256px;height: 144px;position: absolute;background-color: #0052cc;margin-top: 144px;margin-left: 256px;"></div>
+				<div id="cnv7" style="width:256px;height: 144px;position: absolute;background-color: #0052cc;margin-top: 144px;margin-left: 512px;"></div>
+				<div id="cnv8" style="width:256px;height: 144px;position: absolute;background-color: black;margin-top: 144px;margin-left: 768px;"></div>
+				<div id="cnv9" style="width:256px;height: 144px;position: absolute;background-color: black;margin-top: 288px;margin-left: 0px;"></div>
+				<div id="cnv10" style="width:256px;height: 144px;position: absolute;background-color: #0052cc;margin-top: 288px;margin-left: 256px;"></div>
+				<div id="cnv11" style="width:256px;height: 144px;position: absolute;background-color: #0052cc;margin-top: 288px;margin-left: 512px;"></div>
+				<div id="cnv12" style="width:256px;height: 144px;position: absolute;background-color: black;margin-top: 288px;margin-left: 768px;"></div>
+				<div id="cnv13" style="width:256px;height: 144px;position: absolute;background-color: black;margin-top: 432px;margin-left: 0px;font-size: 100px;line-height: 144px;text-align: center;color: white;">3</div>
+				<div id="cnv14" style="width:256px;height: 144px;position: absolute;background-color: black;margin-top: 432px;margin-left: 256px;"></div>
+				<div id="cnv15" style="width:256px;height: 144px;position: absolute;background-color: black;margin-top: 432px;margin-left: 512px;"></div>
+				<div id="cnv16" style="width:256px;height: 144px;position: absolute;background-color: black;margin-top: 432px;margin-left: 768px;font-size: 100px;line-height: 144px;text-align: center;color: white;">4</div>
+			</div>
+		</div>
+		<div class="panel panel-default" style="margin-top: 20px;float: left;width: 1000px;display: inline-block;overflow: auto;border: 0px;text-align: center;'margin-left: 70px;">
+			<div style="width: 205px;margin-right: 60px;float: left;">
+				<div class="panel panel-default">
+					<legend id="name1" style="margin-bottom: 10px;">Thí sinh 1</legend>
+					<div id="score1" style="font-size: 40px;font-weight: bold;">0</div>
+				</div>
+			</div>
+			<div style="width: 205px;margin-right: 60px;float: left;">
+				<div class="panel panel-default">
+					<legend id="name2" style="margin-bottom: 10px;">Thí sinh 2</legend>
+					<div id="score2" style="font-size: 40px;font-weight: bold;">0</div>
+				</div>
+			</div>
+			<div style="width: 205px;margin-right: 60px;float: left;">
+				<div class="panel panel-default">
+					<legend id="name3" style="margin-bottom: 10px;">Thí sinh 3</legend>
+					<div id="score3" style="font-size: 40px;font-weight: bold;">0</div>
+				</div>
+			</div>
+			<div style="width: 205px;margin-right: 0px;float: left;">
+				<div class="panel panel-default">
+					<legend id="name4" style="margin-bottom: 10px;">Thí sinh 4</legend>
+					<div id="score4" style="font-size: 40px;font-weight: bold;">0</div>
+				</div>
+			</div>
+		</div>
+		<div class="panel panel-default"
+		style="width: 1000px;margin-left: 0px;margin-top: 50px;border-radius: 20px;height: 172px;float: left;">
+		<div id="panel-body">
+			<div id="question" style="margin-left: 30px;margin-right: 30px;height:140px;padding-top: 25px;padding-bottom: 25px;font-size: 16px;">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+			tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+			quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+			consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+			cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+			proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
+		</div>
+		<div id="panel-footer" style="height: 20px;">
+
+			<div id="timer_slider"
+			style="background-color: #0099ff;width: 0px;height: 10px;margin-top: 10px;margin-left: 50px;margin-right: 50px;"></div>
+		</div>
+	</div>
+		<input type="text" class="form-control" id="ans" placeholder="Nhập câu trả lời" style="width: 500px;float: left;" onkeypress="submit();">
+		<div id="mouichidoumiru" style="float: left;margin-left: 20px;margin-top: 7px;">a hí hí</div>
+		<button id="cnv" class="btn btn-default" style="float: right;margin-right: 200px;" onclick="cnv();">Trả lời chướng ngại vật</button>
+	</div>
+<script src="/static/js/init.js"></script>
+<script type="text/javascript" src="/static/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static/js/2_contestant.js"></script>
+<script type="text/javascript" src="/static/js/three.js"></script>
+</body>
+</html>

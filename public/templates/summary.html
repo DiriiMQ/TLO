@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="uft-8">
+		<title>Summary</title>
+	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="https://daneden.github.io/animate.css/animate.min.css">
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script> -->
+	<link rel="stylesheet" href="/static/bootstrap-3.3.6/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/static/awesome/css/fontawesome-all.css">
+	<link rel="stylesheet" href="/static/css/animate.min.css">
+	<script type="text/javascript" src="/static/js/socket.io.min.js"></script>
+	</head>
+	<body>
+	<div id="container" style="float: left;margin-top: 20px;width: 95vw">
+		<div id="box1" style="width: 95vw - 150px;margin-left: 80px;margin-top: 60px;">
+			<div class="panel panel-default" style="display: inline-block;border: 0px;width: inherit;">
+				<div id="score1" style="width:100px; float: left;height: 50px;text-align: center;font-size: 40px;font-weight: bold;margin-right: 10px;">0</div>
+				<div style="float: left;">
+				<legend id="name1" style="margin-bottom: 0px;">Thí sinh 1</legend>
+				<div id="scrslide1" style="background: #0066ff;height: 20px;width: 0px;"></div>
+			</div>
+			</div>
+		</div>
+		<div id="box2" style="width: 95vw - 150px;margin-left: 80px;margin-top: 60px;">
+			<div class="panel panel-default" style="display: inline-block;border: 0px;width: inherit;">
+				<div id="score2" style="width:100px; float: left;height: 50px;text-align: center;font-size: 40px;font-weight: bold;margin-right: 10px;">0</div>
+				<div style="float: left;">
+				<legend id="name2" style="margin-bottom: 0px;">Thí sinh 2</legend>
+				<div id="scrslide2" style="background: #0066ff;height: 20px;width: 0px;"></div>
+			</div>
+			</div>
+		</div>
+		<div id="box3" style="width: 95vw - 150px;margin-left: 80px;margin-top: 60px;">
+			<div class="panel panel-default" style="display: inline-block;border: 0px;width: inherit;">
+				<div id="score3" style="width:100px; float: left;height: 50px;text-align: center;font-size: 40px;font-weight: bold;margin-right: 10px;">0</div>
+				<div style="float: left;">
+				<legend id="name3" style="margin-bottom: 0px;">Thí sinh 3</legend>
+				<div id="scrslide3" style="background: #0066ff;height: 20px;width: 0px;"></div>
+			</div>
+			</div>
+		</div>
+		<div id="box4" style="width: 95vw - 150px;margin-left: 80px;margin-top: 60px;">
+			<div class="panel panel-default" style="display: inline-block;border: 0px;width: inherit;">
+				<div id="score4" style="width:100px; float: left;height: 50px;text-align: center;font-size: 40px;font-weight: bold;margin-right: 10px;">0</div>
+				<div style="float: left;">
+				<legend id="name4" style="margin-bottom: 0px;">Thí sinh 4</legend>
+				<div id="scrslide4" style="background: #0066ff;height: 20px;width: 0px;"></div>
+			</div>
+			</div>
+		</div>
+	</div>
+	<div style="float: left;">
+		<button style="float: left;width: 200px;height: 50px;border-width: 0px;margin-top: 10px;background-color: #0066ff;font-size: 15px;font-weight: bold;margin-left: 10px;margin-bottom: 10px;color: white;" onclick = "summary()" onmouseover="(() => {this.style.background = '#4d94ff'})()" onmouseout="(() => {this.style.background = '#0066ff'})()">Tổng kết điểm</button>
+		<button style="float: left;width: 200px;height: 50px;border-width: 0px;margin-top: 10px;background-color: #00ff00;font-size: 15px;font-weight: bold;margin-left: 10px;margin-bottom: 10px;color: white;" onclick = "end()" onmouseover="(() => {this.style.background = '#66ff66'})()" onmouseout="(() => {this.style.background = '#00ff00'})()">Kết thúc</button>
+		<button style="float: left;width: 200px;height: 50px;border-width: 0px;margin-top: 10px;background-color: #ff0000;font-size: 15px;font-weight: bold;margin-left: 10px;margin-bottom: 10px;color: white;" onclick = "erase()" onmouseover="(() => {this.style.background = '#ff4d4d'})()" onmouseout="(() => {this.style.background = '#ff0000'})()">Reset</button>
+	</div>
+<!-- <script src="D:/Hai/Documents/Without IT u dies/nodejs/proj/TLOv2/public/static/js/jquery.min.js"></script>
+<script src="D:/Hai/Documents/Without IT u dies/nodejs/proj/TLOv2/public/static/js/summary.js"></script> -->
+<script src = "/static/js/jquery.min.js"></script>
+<script src = "/static/js/init.js"></script>
+<script src = "/static/js/summary.js"></script>
+</body>
+</html>

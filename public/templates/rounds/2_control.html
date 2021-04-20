@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Round 2</title>
+
+	<!-- Bootstrap styles -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
+</head>
+<body style="padding-top: 30px;">
+	<div class="container">
+		<div id="contestants" class="col-sm-4">
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<legend>Contestants</legend>
+					<ul class="nav nav-pills nav-stacked">
+						<li><a href="#" id="contestant_1"></a></li>
+						<li><a href="#" id="contestant_2"></a></li>
+						<li><a href="#" id="contestant_3"></a></li>
+						<li><a href="#" id="contestant_4"></a></li>
+					</ul>
+					<br>
+					<legend>Tools</legend>
+					<button id="resetAll" class="btn btn-block btn-danger">
+						<i class="fa fa-refresh" aria-hidden="true"></i> 
+						Reset all contestants's points
+					</button>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-8">
+			<div class="panel panel-default">
+			<div class="panel panel panel-default">
+				<div class="panel-footer text-center" id="packs">
+				<div class="btn-group" role="group">
+						<button id="ques1" class="btn btn-default" style="width: 165px; height: 50px;"><b>Câu 1</b></button>
+				</div>
+				<div class="btn-group" role="group">
+						<button id="ques2" class="btn btn-default" style="width: 165px; height: 50px;"><b>Câu 2</b></button>
+				</div>
+				<div class="btn-group" role="group">
+						<button id="ques3" class="btn btn-default" style="width: 165px; height: 50px;"><b>Câu 3</b></button>
+				</div>
+				<div class="btn-group" role="group">
+						<button id="ques4" class="btn btn-default" style="width: 165px; height: 50px;"><b>Câu 4</b></button>
+				</div>
+			</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<div class="question-div">
+						<legend>Question</legend>
+						<strong>
+							<div id="question" style="width: 500px;margin-right: 0px;float: left;">
+								What's your name?
+							</div>
+							<div id="timer" style="float: right;font-size: 40px;color: #0066ff;margin-right:20px;">0</div>
+						</strong>
+					</div>
+				</div>
+				<div class="panel-footer text-center">
+					<div id="question-button1" style="display: inline-block;">
+						<div class="btn-group btn-group-justified">
+							<div class="btn-group" role="group">
+								<button id="correctb" class="btn btn-success">
+									<i class="fa fa-times-check" aria-hidden="true"></i> 
+									Correct
+								</button>
+							</div>
+							<div class="btn-group" role="group">
+								<button id="wrongb" class="btn btn-danger">
+									<i class="fa fa-times" aria-hidden="true"></i> 
+									Wrong
+								</button>
+							</div>
+							<div class="btn-group" role="group">
+								<button id="tick" class="btn btn-info">
+									<i class="fa fa-clock-o" aria-hidden="true"></i> 
+									15s Ticking
+								</button>
+							</div>
+							<div class="btn-group" role="group">
+								<button id="nextcontestant" class="btn btn-default">
+									<i class="fa fa-arrow-right" aria-hidden="true"></i> 
+									Next contestant
+								</button>
+							</div>
+						</div>
+					</div>
+					<div id="question-button2" style="display: inline-block;">
+						<div class="btn-group btn-group-justified">
+							<div class="btn-group" role="group">
+								<button id="correctb" class="btn btn-default">
+									<i class="fa fa-arrow-right" aria-hidden="true"></i> 
+									Show đáp án
+								</button>
+							</div>
+							<div class="btn-group" role="group">
+								<button id="showpic" class="btn btn-primary">
+									<i class="fa fa-info-circle" aria-hidden="true"></i> 
+									Show ảnh
+								</button>
+							</div>
+							<div class="btn-group" role="group">
+								<button id="tick" class="btn btn-default">
+									<i class="fa fa-arrow-left" aria-hidden="true"></i> 
+									Về câu hỏi
+								</button>
+							</div>
+							<div class="btn-group" role="group">
+								<button id="hide" class="btn btn-default">
+									Ẩn chuông
+								</button>
+							</div>
+						</div>
+					</div>
+					<div id="question-button3" style="display: inline-block;">
+						<div class="btn-group btn-group-justified">
+							<div class="btn-group" role="group">
+								<button id="con1" class="btn btn-warning">
+									1 Đúng
+								</button>
+							</div>
+							<div class="btn-group" role="group">
+								<button id="con2" class="btn btn-warning">
+									2 Đúng
+								</button>
+							</div>
+							<div class="btn-group" role="group">
+								<button id="con3" class="btn btn-warning">
+									3 Đúng
+								</button>
+							</div>
+							<div class="btn-group" role="group">
+								<button id="con4" class="btn btn-warning">
+									4 Đúng
+								</button>
+							</div>
+						</div>
+					</div>
+					<div id="question-button4" style="display: inline-block;">
+						<div class="btn-group btn-group-justified">
+							<div class="btn-group" role="group">
+								<button id="cnvcorrectb" class="btn btn-success">
+									Đúng CNV
+								</button>
+							</div>
+							<div class="btn-group" role="group">
+								<button id="cnvwrongb" class="btn btn-danger">
+									<i class="fa fa-times" aria-hidden="true"></i>
+									Sai CNV
+								</button>
+							</div>
+							<div class="btn-group" role="group">
+								<button id="cnvticking" class="btn btn-info">
+									<i class="fa fa-clock-o" aria-hidden="true"></i>
+									CNV Ticking(hình)
+								</button>
+							</div>
+							<div class="btn-group" role="group">
+								<button id="chpticking" class="btn btn-info">
+									<i class="fa fa-clock-o" aria-hidden="true"></i>
+									CNV Ticking(chp)
+								</button>
+							</div>
+						</div>
+					</div>
+					<div id="started-button" style="display: inline-block;">
+						<button id="startedbtn" class="btn btn-block btn-primary">Get started!</button>
+					</div>
+					<div id="next-round" style="display: inline-block;">
+						<a href="/error_page">
+						<button class="btn btn-block btn-primary">
+							Go to round 2 <i class="fa fa-arrow-right" aria-hidden="true"></i>
+						</button>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+<script src="/static/js/1_control.js"></script>
+</html>

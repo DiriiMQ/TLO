@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="uft-8">
+		<title>Round 3</title>
+	<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/static/css/font-awesome.min.css">
+	<link rel="stylesheet" href="/static/css/animate.min.css">
+	<script type="text/javascript" src="/static/js/socket.io.min.js"></script>
+	</head>
+	<body style = "background-color:#ffa64d;">
+		<div>
+			<div id="timer_slider" style="float: left; width: 10px;height: 0px;margin-left: 23px;
+		margin-top:720px;background: #0099ff;"></div>
+			<div style="width: 1280px;height: 720px;float: left;">
+				<div id="question" style="display: none;">
+					<video id="vid" style="position: absolute;width: 1280px;height: 720px;margin-left:10px;margin-bottom: 0px;float: left;" src="/static/video/2.mp4"></video>
+					<img id="img" style="position: absolute;width: 1280px;height: 720px;margin-left: 10px;margin-bottom: 0px;float: left;display: none;" src="C:/FlaskApp/ThapLuaOlympia/TLOv2/static/images/1.jpg">
+				</div>
+			</div>
+		</div>
+		<div class="panel panel-default" style="margin-top: 100px;float: left;width: 1000px;display: inline-block;margin-left: 150px;overflow: auto;border: 0px;text-align: center;background-color: inherit;">
+			<div style="width: 205px;margin-right: 60px;float: left;">
+				<div class="panel panel-default" style = "border: 2px solid black;">
+					<legend id="name1" style="margin-bottom: 10px;color: white;background-color: #9900cc; font-weight: bold;">Thí sinh 1</legend>
+					<div id="score1" style="font-size: 40px;font-weight: bold;">0</div>
+				</div>
+			</div>
+			<div style="width: 205px;margin-right: 60px;float: left;">
+				<div class="panel panel-default" style = "border: 2px solid black;">
+					<legend id="name2" style="margin-bottom: 10px;color: white;background-color: #9900cc; font-weight: bold;">Thí sinh 2</legend>
+					<div id="score2" style="font-size: 40px;font-weight: bold;">0</div>
+				</div>
+			</div>
+			<div style="width: 205px;margin-right: 60px;float: left;">
+				<div class="panel panel-default" style = "border: 2px solid black;">
+					<legend id="name3" style="margin-bottom: 10px;color: white;background-color: #9900cc; font-weight: bold;">Thí sinh 3</legend>
+					<div id="score3" style="font-size: 40px;font-weight: bold;">0</div>
+				</div>
+			</div>
+			<div style="width: 205px;margin-right: 0px;float: left;">
+				<div class="panel panel-default" style = "border: 2px solid black;">
+					<legend id="name4" style="margin-bottom: 10px;color: white;background-color: #9900cc; font-weight: bold;">Thí sinh 4</legend>
+					<div id="score4" style="font-size: 40px;font-weight: bold;">0</div>
+				</div>
+			</div>
+		</div>
+		<div style="float: left;margin-left: 50px;float: left;width: 1000px;margin-top:50px;">
+			<div style="margin-right: 60px;float: left;border: 2px solid black;height: 87px;margin-bottom: 20px;" id="ts_1">
+				<div class="panel panel-default" style="float: left;width: 120px;height: 83px;text-align: center;line-height: 83px;font-size: 40px;font-weight: bold;" id="time1">0.00</div>
+				<div class="panel panel-default" style="float: left;">
+					<legend id="nameans1" style="margin-bottom: 0px;width: 600px;font-weight: bold;">Thí sinh 1</legend>
+					<div id="ans1" style="font-size: 40px;font-weight: bold;height: 50px;line-height: 50px;text-align: center;">0</div>
+				</div>
+			</div>
+			<div style="margin-right: 60px;float: left;border: 2px solid black;height: 87px;margin-bottom: 20px;" id="ts_2">
+				<div>
+					<div class="panel panel-default" style="float: left;width: 120px;height: 83px;text-align: center;line-height: 83px;font-size: 40px;font-weight: bold;" id="time2">0.00</div>
+					<div class="panel panel-default" style="float: left;">
+						<legend id="nameans2" style="margin-bottom: 0px;width: 600px;font-weight: bold;">Thí sinh 2</legend>
+						<div id="ans2" style="font-size: 40px;font-weight: bold;height: 50px;line-height: 50px;text-align: center;">0</div>
+					</div>
+				</div>
+			</div>
+			<div style="margin-right: 60px;float: left;border: 2px solid black;height: 87px;margin-bottom: 20px;" id="ts_3">
+				<div>
+					<div class="panel panel-default" style="float: left;width: 120px;height: 83px;text-align: center;line-height: 83px;font-size: 40px;font-weight: bold;" id="time3">0.00</div>
+					<div class="panel panel-default" style="float: left;">
+						<legend id="nameans3" style="margin-bottom: 0px;width: 600px;font-weight: bold;">Thí sinh 3</legend>
+						<div id="ans3" style="font-size: 40px;font-weight: bold;height: 50px;line-height: 50px;text-align: center;">0</div>
+					</div>
+				</div>
+			</div>
+			<div style="margin-right: 60px;float: left;border: 2px solid black;height: 87px;margin-bottom: 20px;" id="ts_4">
+				<div>
+					<div class="panel panel-default" style="float: left;width: 120px;height: 83px;text-align: center;line-height: 83px;font-size: 40px;font-weight: bold;" id="time4">0.00</div>
+					<div class="panel panel-default" style="float: left;">
+						<legend id="nameans4" style="margin-bottom: 0px;width: 600px;font-weight: bold;">Thí sinh 4</legend>
+						<div id="ans4" style="font-size: 40px;font-weight: bold;height: 50px;line-height: 50px;text-align: center;">0</div>
+					</div>
+				</div>
+			</div>
+		</div>
+<script src="/static/js/init.js"></script>
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/3_viewer.js"></script>
+</body>
+</html>

@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Control</title>
+		<!-- <link rel="stylesheet" href="C:/FlaskApp/ThapLuaOlympia/TLOv2/static/bootstrap-3.3.6/dist/css/bootstrap.min.css">
+		<link rel="stylesheet" href="C:/FlaskApp/ThapLuaOlympia/TLOv2/static/awesome/css/fontawesome-all.css">
+		<link rel="stylesheet" type="text/css" href="C:/FlaskApp/ThapLuaOlympia/TLOv2/templates/control.css"> -->
+		<link rel="stylesheet" href="/static/bootstrap-3.3.6/dist/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/static/awesome/css/fontawesome-all.css">
+		<!-- <link rel="stylesheet" type="text/css" href="control.css"> -->
+		<link rel="stylesheet" href="/static/css/animate.min.css">
+		<link rel="stylesheet" type="text/css" href="/templates/control.css">
+		<script type="text/javascript" src="/static/js/socket.io.min.js"></script>
+	</head>
+	<!-- đỏ: #ff0000/ vàng: #ffcc00/ xanh: #00ff00/cam: #ff8000/xanh tối: #00b300/lam:#002699 -->
+	<body style="color: white;background-color: black;">
+		<script type="text/javascript">
+			function hideshow(obj){
+				obj.style.display=(obj.style.display=="none")?("block"):("none");
+			}
+			function disabled(obj){
+				obj.prop("disabled",true);
+			}
+			function enabled(obj){
+				obj.removeAttr("disabled");
+			}
+			function changecurroundedit(){
+				const round=$("#curround_edit");
+				const con=$("#curcon_edit");
+				const ques=$("#curques_edit");
+				const pack=$("#curpack_edit");
+				enabled(con);
+				enabled(ques);
+				disabled(pack);
+				// for(i in con.object){
+				// 	con.object[i].remove();
+				// }
+				// for(i in ques.object){
+				// 	ques.object[i].remove();
+				// }
+				con.empty();
+				ques.empty();
+				pack.empty();
+				switch (round.val()){
+					case "0":
+						{
+							for(var i=0;i<4;i++){
+								con.append($(`<option>`,{
+									value: i,
+									text: parseInt(i)+1
+								}));
+							};
+							disabled(ques);
+						}
+						break;
+					case "1":
+						{
+							for(var i=-1;i<=4;i++){
+								ques.append($(`<option>`,{
+									value: i,
+									text: parseInt(i)+1
+								}));
+							};
+							disabled(con);
+						}
+						break;
+					case "2":
+						{
+							for(var i=0;i<4;i++){
+								ques.append($(`<option>`,{
+									value: i,
+									text: parseInt(i)+1
+								}));
+							};
+							disabled(con);
+						}
+						break;
+					case "3":
+						{
+							for(var i=-1;i<4;i++){
+								con.append($(`<option>`,{
+									value: i,
+									text: parseInt(i)+1
+								}));
+							};
+							for(var i=-1;i<3;i++){
+								ques.append($(`<option>`,{
+									value: i,
+									text: parseInt(i)+1
+								}));
+							};
+							for(var i=0;i<3;i++){
+								pack.append($(`<option>`,{
+									value: i,
+									text: parseInt(i)+1
+								}));
+							};
+							enabled(pack);
+						}
+						break;
+					case "4":
+						{
+							for(var i = -1;i<13;i++){
+								ques.append($(`<option>`,{
+									value: i,
+									text: parseInt(i) + 1
+								}))
+							}
+						}
+						break;
+				}
+			}
+			function sidenav(id){
+				if($("#close" + id).html() == "&gt;"){
+					document.getElementById("sidenav-content" + id).style.width = "0px";
+					document.getElementById("sidenav" + id).style.width = "40px";
+					$("#close" + id).html("<")
+				}
+				else{
+					document.getElementById("sidenav" + id).style.width = "400px";
+					document.getElementById("sidenav-content" + id).style.width = "360px";
+					$("#close" + id).html(">")
+				}
+			}
+		</script>
+		<div class="stt">
+			<p id="status" style="color: white;">Not connected</p>
+		</div>
+		<div class="sidenav" id="sidenav1" style="background-color: #262626;width:400px;height: 330px;top:30px;right: 20px;">
+			<div class="close" id="close1" onclick="sidenav(1)">></div>
+			<div class="sidenav-content" id = "sidenav-content1">
+				<div style="width: inherit;height: 50px;font-size: 30px;font-family: arial;font-weight: bold;background-color: #4d4d4d;text-align: center;padding-bottom: 5px; float: left;">Overall Status <i id="status_cir" class="fa fa-circle" style="color: #ff0000;"></i></div>
+				<div style="margin: 5px 5px 5px 5px; float: left;">
+					<div style="font-weight: bold;float: left;width: 130px;">Vòng thi hiện tại:</div>
+					<div id="curround">Chưa bắt đầu</div>
+					<div style="margin-top: 10px;height: 20px;float: left;" id="stt1_tab">
+						<div id="con1_name" style="font-weight: bold;float: left;width: 130px;margin-left: 40px;">Thí sinh 1:</div>
+						<div id="con1_score" style="width: 20px;float: left;margin-right: 20px;">0</div>
+						<div id="stt1" style="float:left;background-color: #ff0000;width: 100px;height: 20px;border-radius: 5px;"></div>
+					</div>
+					<div style="margin-top: 10px;height: 20px;float: left;" id="stt2_tab">
+						<div id="con2_name" style="font-weight: bold;float: left;width: 130px;margin-left: 40px;">Thí sinh 2:</div>
+						<div id="con2_score" style="width: 20px;float: left;margin-right: 20px;">0</div>
+						<div id="stt2" style="float:left;background-color: #ff0000;width: 100px;height: 20px;border-radius: 5px;"></div>
+					</div>
+					<div style="margin-top: 10px;height: 20px;float: left;" id="stt3_tab">
+						<div id="con3_name" style="font-weight: bold;float: left;width: 130px;margin-left: 40px;">Thí sinh 3:</div>
+						<div id="con3_score" style="width: 20px;float: left;margin-right: 20px;">0</div>
+						<div id="stt3" style="float:left;background-color: #ff0000;width: 100px;height: 20px;border-radius: 5px;"></div>
+					</div>
+					<div style="margin-top: 10px;height: 20px;float: left;" id="stt4_tab">
+						<div id="con4_name" style="font-weight: bold;float: left;width: 130px;margin-left: 40px;">Thí sinh 4:</div>
+						<div id="con4_score" style="width: 20px;float: left;margin-right: 20px;">0</div>
+						<div id="stt4" style="float:left;background-color: #ff0000;width: 100px;height: 20px;border-radius: 5px;"></div>
+					</div>
+					<div style="margin-top: 10px;height: 20px;float: left;" id="stt5_tab">
+						<div style="font-weight: bold;float: left;width: 130px;margin-left: 40px;">Viewer / MC:</div>
+						<div id="sttscr" style="float:left;background-color: #ff0000;width: 45px;height: 20px;border-radius: 5px;margin-left: 40px;"></div>
+						<div id="sttmc" style="float:left;background-color: #ff0000;width: 45px;height: 20px;border-radius: 5px;margin-left: 10px;"></div>
+					</div>
+				</div>
+				<div style="margin-top: 20px;">
+					<select id="curround_edit" style="background-color: black;width: 50px;margin-left: 50px;float: left;height: 30px;" onchange="changecurroundedit();">
+						<option>-</option>
+						<option value="0">1</option>
+						<option value="1">2</option>
+						<option value="2">3</option>
+						<option value="3">4</option>
+						<option value="4">5</option>
+					</select>
+					<select id="curcon_edit" style="background-color: black;width: 50px;margin-left: 20px;float: left;height: 30px;"></select>
+					<select id="curques_edit" style="background-color: black;width: 50px;margin-left: 20px;float: left;height: 30px;"></select>
+					<select id="curpack_edit" style="background-color: black;width: 50px;margin-left: 20px;float: left;height: 30px;">
+					</select>
+					<button id="save_status_btn" style="float: left;width: 100px;height: 30px;border-width: 0px;margin-top: 10px;background-color: #ffcc00;font-size: 15px;font-weight: bold;margin-left: 75px;margin-bottom: 10px;" onmouseover="this.style.background='#ffe066';" onmouseout="this.style.background='#ffcc00';" onclick="save_status();"><i class="fa fa-save"></i> Lưu</button>
+					<button id="check_status_btn" style="float: left;width: 100px;height: 30px;border-width: 0px;margin-top: 10px;background-color: #ff6600;font-size: 15px;font-weight: bold;margin-left: 10px;margin-bottom: 10px;" onmouseover="this.style.background='#ff8533';" onmouseout="this.style.background='#ff6600';" onclick="check_status();"><i class="fa fa-check"></i> Check</button>
+				</div>
+			</div>
+		</div>
+		<div class="sidenav" id="sidenav2" style="background-color: #262626;width:400px;height: 330px;top:400px;right: 20px;">
+			<div class="close" id="close2" onclick="sidenav(2)">></div>
+			<div class="sidenav-content" id = "sidenav-content2">
+				<div style="width: inherit;height: 50px;font-size: 30px;font-family: arial;font-weight: bold;background-color: #4d4d4d;text-align: center;padding-bottom: 5px; float: left;">Communication</div>
+				<div id="message" style="margin: 5px 5px 5px 5px;float: left;height: 200px;width: 350px"></div>
+				<div style="float: left;margin-top: 20px;">
+					<input id="mcmessage" class="form-control" type="text" placeholder="Message" style="background-color: inherit; float: left;width: 200px; margin-left: 20px;">
+					<button class="form-control" style="float: left;background-color: inherit;width: 70px;margin-left: 30px;">Submit</button>
+				</div>
+			</div>
+		</div>
+		<div id="contestants_editor" style="display: block;height: 400px;float: left;width: 1340px;">
+			<div style="font-size: 40px;color: white;font-family: arial; background-color: #3399ff;padding-left: 200px;padding-bottom: 7px;">Quản lý thí sinh và trận đấu :vvv</div>
+			<div id="match-info" style="height: 40px;margin: 20px;">
+				<div style="width: 100px;margin-right: 20px;float: left;font-size: 20px;font-weight: bold;color: #0000ff;">Trận</div>
+				<input class="form-control" style="float: left;width:200px;border-radius: 5px;margin-right: 10px;background-color: black;" id="match-index" type="text" placeholder="Trận đấu">
+				<button id="submitIndex" style="width: 150px;height:50px;background-color: #00ff00;border-width: 0px;font-weight: bold;
+				" onmouseover="this.style.background='#66ff66';"onmouseout="this.style.background='#00ff00';">Lưu thông số</button>
+			</div>
+			<button id="loading_con_btn" style="float: left;width: 200px;height: 30px;border-width: 0px;margin-top: 10px;background-color: #3399ff;font-size: 15px;font-weight: bold;margin-left: 10px;margin-right: 700px;margin-bottom: 10px;" onmouseover="this.style.background='#66b3ff';" onmouseout="this.style.background='#3399ff';" onclick="quest_loader.load_con();"><i class="fa fa-download"></i> Load thí sinh</button>
+			<div id="con_edit" style="width: 500px;float: left;margin-left: 20px;">
+				<div id="con1" style="height: 40px;margin-top: 10px;">
+					<div style="width: 100px;margin-right: 20px;float: left;font-size: 20px;font-weight: bold;color: #0000ff;">Thí sinh 1</div>
+					<input class="form-control" style="float: left;width:200px;border-radius: 5px;margin-right: 10px;background-color: black;" id="name1_edit" type="text" placeholder="Tên thí sinh">
+					<input class="form-control" style="float: left;width: 70px;borde r-radius: 5px;background-color: black;" id="score1_edit" type="text" placeholder="Điểm">
+				</div>
+				<div id="con2" style="height: 40px;margin-top: 10px;">
+					<div style="width: 100px;margin-right: 20px;float: left;font-size: 20px;font-weight: bold;color: #0000ff;">Thí sinh 2</div>
+					<input class="form-control" style="float: left;width:200px;border-radius: 5px;margin-right: 10px;background-color: black;" id="name2_edit" type="text" placeholder="Tên thí sinh">
+					<input class="form-control" style="float: left;width: 70px;border-radius: 5px;background-color: black;" id="score2_edit" type="text" placeholder="Điểm">
+				</div>
+				<div id="con3" style="height: 40px;margin-top: 10px;">
+					<div style="width: 100px;margin-right: 20px;float: left;font-size: 20px;font-weight: bold;color: #0000ff;">Thí sinh 3</div>
+					<input class="form-control" style="float: left;width:200px;border-radius: 5px;margin-right: 10px;background-color: black;" id="name3_edit" type="text" placeholder="Tên thí sinh">
+					<input class="form-control" style="float: left;width: 70px;border-radius: 5px;background-color: black;" id="score3_edit" type="text" placeholder="Điểm">
+				</div>
+				<div id="con4" style="height: 40px;margin-top: 10px;">
+					<div style="width: 100px;margin-right: 20px;float: left;font-size: 20px;font-weight: bold;color: #0000ff;">Thí sinh 4</div>
+					<input class="form-control" style="float: left;width:200px;border-radius: 5px;margin-right: 10px;background-color: black;" id="name4_edit" type="text" placeholder="Tên thí sinh">
+					<input class="form-control" style="float: left;width: 70px;border-radius: 5px;background-color: black;" id="score4_edit" type="text" placeholder="Điểm">
+				</div>
+			</div>
+			<div id="con_edit_btn" style="float: left;width: 200px;display: inline-block;">
+				<button id="save_con_btn" style="width: 150px;height:50px;margin-top:35px;background-color: #00ff00;border-width: 0px;font-weight: bold;
+				" onmouseover="this.style.background='#66ff66';"onmouseout="this.style.background='#00ff00';" onclick="update_contestants();">Lưu</button>
+				<button id="reset_con_btn" style="width: 150px;height: 50px;margin-top:30px;background-color: #ff0000;border-width: 0px;font-weight: bold;"	onmouseover="this.style.background='#ff6666';"onmouseout="this.style.background='#ff0000';" onclick="reset_contestants();">Reset</button>
+			</div>
+		</div>
+		<div id="questions_editor" style="display: block;float: left;width: 1340px;">
+			<div style="font-size: 40px;color: white;font-family: arial; background-color: #ffbf00;padding-left: 200px;padding-bottom: 7px;margin-bottom: 20px;">Quản lý câu hỏi :vvvv</div>
+			<div style="margin-bottom: 20px;">
+				<div style="font-size: 20px;color: white;font-family: arial; background-color: #ffd24d;padding-left: 50px;padding-bottom: 5px;width: 500px;margin-bottom: 5px;" onmouseover="this.style.background='#ffe699';" onmouseout="this.style.background='#ffd24d'" onclick="hideshow(document.getElementById('round1'));">Câu hỏi vòng 1</div>
+				<div id="round1" style="width: 1280px;margin-left: 20px;height: 1000px;display: none;">
+					<button id="loading_ques_1_btn" style="float: left;width: 200px;height: 30px;border-width: 0px;margin-top: 10px;background-color: #ffcc00;font-size: 15px;font-weight: bold;margin-left: 10px;margin-right: 500px;margin-bottom: 10px;" onmouseover="this.style.background='#ffe066';" onmouseout="this.style.background='#ffcc00';" onclick="quest_loader.load_ques1();"><i class="fa fa-download"></i> Load câu hỏi</button>
+					<button id="save_ques_1_btn" style="float: left;width: 300px;height: 50px;font-size: 30px;border-width: 0px;margin-left: 520px;background-color: #ffcc00" onmouseover="this.style.background='#ffe066';" onmouseout="this.style.background='#ffcc00';" onclick="round_one.save_question_1();">Lưu</button>
+				</div>
+			</div>
+			<div style="margin-bottom: 20px;">
+				<div style="font-size: 20px;color: white;font-family: arial; background-color: #ffd24d;padding-left: 50px;padding-bottom: 5px;width: 500px;" onmouseover="this.style.background='#ffe699';" onmouseout="this.style.background='#ffd24d'" onclick="hideshow(document.getElementById('round2'));">Câu hỏi vòng 2</div>
+				<div id="round2" style="width: 1280px;margin-left: 20px;height: 300px;display: none;">
+					<button id="loading_ques_2_btn" style="float: left;width: 200px;height: 30px;border-width: 0px;margin-top: 10px;background-color: #ffcc00;font-size: 15px;font-weight: bold;margin-left: 10px;margin-right: 500px;margin-bottom: 10px;" onmouseover="this.style.background='#ffe066';" onmouseout="this.style.background='#ffcc00';" onclick="quest_loader.load_ques2();"><i class="fa fa-download"></i> Load câu hỏi</button>
+					<div style="margin-left: 10px;float: left;">
+						<button id="save_ques_2_btn" style="float: right;width: 150px;height: 200px;font-size: 30px;border-width: 0px;margin-right: 200px;background-color: #ffcc00" onmouseover="this.style.background='#ffe066';" onmouseout="this.style.background='#ffcc00';" onclick="round_two.save_question_2();">Lưu</button>
+						<div style="margin-top: 10px;width: 900px;float: left;">
+							<div style="width: 100px;margin-right: 20px;float: left;font-size: 20px;font-weight: bold;color: #ffe699;width: 200px;">Hàng ngang thứ 1</div>
+							<input id="save_ques2_1" class="form-control" style="background-color: black;width: 400px;margin-left: 20px;height:30px;float: left;" placeholder="Nhập câu hỏi">
+							<input id="save_ques2_1_ans" class="form-control" style="background-color: black;width: 200px;margin-left: 20px;height:30px;float: left;" placeholder="Nhập câu trả lời">
+						</div>
+						<div style="margin-top: 10px;width: 900px;float: left;">
+							<div style="width: 100px;margin-right: 20px;float: left;font-size: 20px;font-weight: bold;color: #ffe699;width: 200px;">Hàng ngang thứ 2</div>
+							<input id="save_ques2_2" class="form-control" style="background-color: black;width: 400px;margin-left: 20px;height:30px;float: left;" placeholder="Nhập câu hỏi">
+							<input id="save_ques2_2_ans" class="form-control" style="background-color: black;width: 200px;margin-left: 20px;height:30px;float: left;" placeholder="Nhập câu trả lời">
+						</div>
+						<div style="margin-top: 10px;width: 900px;float: left;">
+							<div style="width: 100px;margin-right: 20px;float: left;font-size: 20px;font-weight: bold;color: #ffe699;width: 200px;">Hàng ngang thứ 3</div>
+							<input id="save_ques2_3" class="form-control" style="background-color: black;width: 400px;margin-left: 20px;height:30px;float: left;" placeholder="Nhập câu hỏi">
+							<input id="save_ques2_3_ans" class="form-control" style="background-color: black;width: 200px;margin-left: 20px;height:30px;float: left;" placeholder="Nhập câu trả lời">
+						</div>
+						<div style="margin-top: 10px;width: 900px;float: left;">
+							<div style="width: 100px;margin-right: 20px;float: left;font-size: 20px;font-weight: bold;color: #ffe699;width: 200px;">Hàng ngang thứ 4</div>
+							<input id="save_ques2_4" class="form-control" style="background-color: black;width: 400px;margin-left: 20px;height:30px;float: left;" placeholder="Nhập câu hỏi">
+							<input id="save_ques2_4_ans" class="form-control" style="background-color: black;width: 200px;margin-left: 20px;height:30px;float: left;" placeholder="Nhập câu trả lời">
+						</div>
+						<div style="margin-top: 10px;width: 900px;float: left;">
+							<div style="width: 100px;margin-right: 20px;float: left;font-size: 20px;font-weight: bold;color: #ffe699;width: 200px;">Câu hỏi ô trung tâm</div>
+							<input id="save_ques2_5" class="form-control" style="background-color: black;width: 500px;margin-left: 20px;height:30px;float: left;" placeholder="Nhập câu hỏi">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div style="margin-bottom: 20px;">
+				<div style="font-size: 20px;color: white;font-family: arial; background-color: #ffd24d;padding-left: 50px;padding-bottom: 5px;width: 500px;" onmouseover="this.style.background='#ffe699';" onmouseout="this.style.background='#ffd24d'" onclick="hideshow(document.getElementById('round3'));">Câu hỏi vòng 3</div>
+				<div id="round3" style="width: 1280px;margin-left: 20px;height: 270px;display: none;">
+					<button id="loading_ques_3_btn" style="float: left;width: 200px;height: 30px;border-width: 0px;margin-top: 10px;background-color: #ffcc00;font-size: 15px;font-weight: bold;margin-left: 10px;margin-right: 500px;margin-bottom: 10px;" onmouseover="this.style.background='#ffe066';" onmouseout="this.style.background='#ffcc00';" onclick="quest_loader.load_ques3();"><i class="fa fa-download"></i> Load câu hỏi</button>
+					<div style=" margin-left: 10px;">
+						<button id="save_ques_3_btn" style="float: right;width: 150px;height: 160px;font-size: 30px;border-width: 0px;margin-right: 100px;background-color: #ffcc00;margin-top: 60px;" onmouseover="this.style.background='#ffe066';" onmouseout="this.style.background='#ffcc00';" onclick="round_three.save_question_3();">Lưu</button>
+						<div style="margin-top: 10px;width: 1000px;float: left;">
+							<div style="width: 100px;	margin-right: 20px;float: left;font-size: 20px;font-weight: bold;color: #ffe699;width: 200px;">Câu hỏi thứ 1</div>
+							<input id="save_ques3_1" class="form-control" style="background-color: black;width: 500px;margin-left: 20px;margin-right: 20px;height:30px;float: left;" placeholder="Nhập câu hỏi">
+							<select id="save_ques3_1_type" class="form-control" style="background-color: black;width: 200px;height: 30px;">
+								<option style="color: white;" value="img">Hình ảnh</option>
+								<option style="color: white;" value="vid">Video</option>
+							</select>
+						</div>
+						<div style="margin-top: 10px;width: 1000px;float: left;">
+							<div style="width: 100px;margin-right: 20px;float: left;font-size: 20px;font-weight: bold;color: #ffe699;width: 200px;">Câu hỏi thứ 2</div>
+							<input id="save_ques3_2" class="form-control" style="background-color: black;width: 500px;margin-left: 20px;margin-right: 20px;height:30px;float: left;" placeholder="Nhập câu hỏi">
+							<select id="save_ques3_2_type" class="form-control" style="background-color: black;width: 200px;height: 30px;">
+								<option style="color: white;" value="img">Hình ảnh</option>
+								<option style="color: white;" value="vid">Video</option>
+							</select>
+						</div>
+						<div style="margin-top: 10px;width: 1000px;float: left;">
+							<div style="width: 100px;margin-right: 20px;float: left;font-size: 20px;font-weight: bold;color: #ffe699;width: 200px;">Câu hỏi thứ 3</div>
+							<input id="save_ques3_3" class="form-control" style="background-color: black;width: 500px;margin-left: 20px;margin-right: 20px;height:30px;float: left;" placeholder="Nhập câu hỏi">
+							<select id="save_ques3_3_type" class="form-control" style="background-color: black;width: 200px;height: 30px;">
+								<option style="color: white;" value="img">Hình ảnh</option>
+								<option style="color: white;" value="vid">Video</option>
+							</select>
+						</div>
+						<div style="margin-top: 10px;width: 1000px;float: left;">
+							<div style="width: 100px;margin-right: 20px;float: left;font-size: 20px;font-weight: bold;color: #ffe699;width: 200px;">Câu hỏi thứ 4</div>
+							<input id="save_ques3_4" class="form-control" style="background-color: black;width: 500px;margin-left: 20px;margin-right: 20px;height:30px;float: left;" placeholder="Nhập câu hỏi">
+							<select id="save_ques3_4_type" class="form-control" style="background-color: black;width: 200px;height: 30px;">
+								<option style="color: white;" value="img">Hình ảnh</option>
+								<option style="color: white;" value="vid">Video</option>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div style="margin-bottom: 20px;">
+				<div style="font-size: 20px;color: white;font-family: arial; background-color: #ffd24d;padding-left: 50px;padding-bottom: 5px;width: 500px;" onmouseover="this.style.background='#ffe699';" onmouseout="this.style.background='#ffd24d'" onclick="hideshow(document.getElementById('round4'));">Câu hỏi vòng 4</div>
+				<div id="round4" style="width: 1280px;margin-left: 20px;height: 1020px;display: none;">
+					<button id="loading_ques_4_btn" style="float: left;width: 200px;height: 30px;border-width: 0px;margin-top: 10px;background-color: #ffcc00;font-size: 15px;font-weight: bold;margin-left: 10px;margin-right: 500px;margin-bottom: 10px;" onmouseover="this.style.background='#ffe066';" onmouseout="this.style.background='#ffcc00';" onclick="quest_loader.load_ques4();"><i class="fa fa-download"></i> Load câu hỏi</button>
+					<button id="save_ques_4_btn" style="float: left;width: 300px;height: 50px;font-size: 30px;border-width: 0px;margin-left: 520px;background-color: #ffcc00" onmouseover="this.style.background='#ffe066';" onmouseout="this.style.background='#ffcc00';" onclick="round_four.save_question();">Lưu</button>
+				</div>
+			</div>
+			<div style="margin-bottom: 20px;">
+				<div style="font-size: 20px;color: white;font-family: arial; background-color: #ffd24d;padding-left: 50px;padding-bottom: 5px;width: 500px;" onmouseover="this.style.background='#ffe699';" onmouseout="this.style.background='#ffd24d'" onclick="hideshow(document.getElementById('round5'));">Câu hỏi phụ</div>
+				<div id="round5" style="width: 1280px;margin-left: 20px;height: 300px;display: none;">
+					<button id="loading_ques_5_btn" style="float: left;width: 200px;height: 30px;border-width: 0px;margin-top: 10px;background-color: #ffcc00;font-size: 15px;font-weight: bold;margin-left: 10px;margin-right: 500px;margin-bottom: 10px;" onmouseover="this.style.background='#ffe066';" onmouseout="this.style.background='#ffcc00';" onclick="quest_loader.load_ques5();"><i class="fa fa-download"></i> Load câu hỏi</button>
+					<!-- <div style="margin-left: 10px;float: left;">
+						<button id="save_ques_5_btn" style="float: right;width: 150px;height: 200px;font-size: 30px;border-width: 0px;margin-right: 200px;background-color: #ffcc00" onmouseover="this.style.background='#ffe066';" onmouseout="this.style.background='#ffcc00';" onclick="round_five.save_question_5();">Lưu</button>
+						<div style="margin-top: 10px;width: 900px;float: left;">
+							<div style="width: 100px;margin-right: 20px;float: left;font-size: 20px;font-weight: bold;color: #ffe699;width: 200px;">Câu hỏi thứ 1</div>
+							<input id="save_ques5_1" class="form-control" style="background-color: black;width: 400px;margin-left: 20px;height:30px;float: left;" placeholder="Nhập câu hỏi">
+						</div>
+						<div style="margin-top: 10px;width: 900px;float: left;">
+							<div style="width: 100px;margin-right: 20px;float: left;font-size: 20px;font-weight: bold;color: #ffe699;width: 200px;">Câu hỏi thứ 2</div>
+							<input id="save_ques5_2" class="form-control" style="background-color: black;width: 400px;margin-left: 20px;height:30px;float: left;" placeholder="Nhập câu hỏi">
+						</div>
+						<div style="margin-top: 10px;width: 900px;float: left;">
+							<div style="width: 100px;margin-right: 20px;float: left;font-size: 20px;font-weight: bold;color: #ffe699;width: 200px;">Câu hỏi thứ 3</div>
+							<input id="save_ques5_3" class="form-control" style="background-color: black;width: 400px;margin-left: 20px;height:30px;float: left;" placeholder="Nhập câu hỏi">
+						</div>
+					</div> -->
+				</div>
+			</div>
+		</div>
+		<div id="main_shit" style="display: block;float: left;width: 1340px;">
+			<div style="font-size: 40px;color: white;font-family: arial; background-color: #ff6600;padding-left: 200px;padding-bottom: 7px;margin-bottom: 20px;">Thi đấu</div>
+			<div style="width: 1280px;margin-left: 20px;">
+				<div style="font-size: 20px;color: white;font-family: arial; background-color: #ff8533;padding-left: 50px;padding-bottom: 5px;width: 500px;height: 33px;" onmouseover="this.style.background='#ffb380';" onmouseout="this.style.background='#ff8533';" onclick="hideshow(document.getElementById('round1_main'));">Khởi động</div>
+				<div id="round1_main" style="height: 330px;display: none;">
+				<!--<button id="start_all_1_btn" style="float: left;width: 300px;height: 30px;border-width: 0px;margin-top: 20px;background-color: #ff4d4d;font-size: 15px;font-weight: bold;margin-left: 10px;" onmouseover="this.style.background='#ff6666';" onmouseout="this.style.background='#ff4d4d';"><i class="fa fa-play"></i> Bắt đầu vòng khởi động</button>-->
+				<button id="load_ques_1_btn" style="float: left;width: 200px;height: 30px;border-width: 0px;margin-top: 20px;background-color: #ffcc00;font-size: 15px;font-weight: bold;margin-left: 10px;" onmouseover="this.style.background='#ffe066';" onmouseout="this.style.background='#ffcc00';" onclick="round_one.load_question();"><i class="fa fa-download"></i> Load câu hỏi</button>
+				<!-- <div style="width: 1000px;float: left;height: 30px;margin-left: 100px;margin-top: 20px;">
+					<div style="width: 100px;margin-right: 20px;float: left;font-size: 20px;font-weight: bold;color: #ffe699;">Status</div>
+					<div style="float: left;height: 20px;margin-top: 5px;">
+						<div id="stt1" style="background-color:#ff0000;width: 200px;height: 20px;float: left;"></div>
+						<div id="stt2" style="background-color:#ff0000;width: 200px;height: 20px;float: left;"></div>
+						<div id="stt3" style="background-color:#ff0000;width: 200px;height: 20px;float: left;"></div>
+						<div id="stt4" style="background-color:#ff0000;width: 200px;height: 20px;float: left;"></div>
+					</div>
+				</div> -->
+				<div style="float: left;margin-top: 20px;margin-left: 50px;width: 1100px;">
+					<div style="font-weight: bold;background-color: #000000;position: absolute;margin-left: 20px;width: 200px;text-align: center;font-size: 17px;"><div style="float: left;margin-left: 42px;margin-right: 5px;">Câu hỏi thứ</div><div id="numques1" style="width: 20px;float: left;">0</div></div>
+					<div id="ques_1" style="width: 960px;height: 150px;border: 1px solid white;border-radius: 10px;margin-top:10px;padding:20px 15px 15px 15px;font-size: 17px;float: left;">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+					tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+					quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+					consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+					cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+					proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
+					<div id="timer_1" style="float: left;width: 50px;font-size: 35px;font-weight: bold;margin-left: 70px;margin-top: 120px;">0</div>
+					<div id="ans_n" style="float: left;">
+					</div>
+					<div style="float: left;width: 900px;margin-top: 20px;margin-left: 50px;">
+						<button id="start_1_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #002699;font-weight: bold;border-width: 0px;color: white;" onmouseover="this.style.background='#0039e6';" onmouseout="this.style.background='#002699';" onclick="round_one.start();"><i class="fa fa-play"></i> Bắt đầu</button>
+						<button id="true_1_btn" disabled="true" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #00b300;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;" onmouseover="this.style.background='#00ff00';" onmouseout="this.style.background='#00b300';" onclick="round_one.correct();"><i class="fa fa-check"></i> Đúng</button>
+						<button id="false_1_btn" disabled="true" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #ff0000;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;" onmouseover="this.style.background='#ff4d4d';" onmouseout="this.style.background='#ff0000';" onclick="round_one.wrong();"><i class="fa fa-times"></i> Sai</button>
+						<button id="next_1_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #ffcc00;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;" onmouseover="this.style.background='#ffe066';" onmouseout="this.style.background='#ffcc00';" onclick="round_one.next();">Đứa khác :v <i class="fa fa-arrow-right"></i></button>
+					</div>
+				</div>
+				</div>
+		</div>
+		<div style="width: 1280px;margin-left: 20px;margin-top: 20px;">
+			<div style="font-size: 20px;color: white;font-family: arial; background-color: #ff8533;padding-left: 50px;padding-bottom: 5px;width: 500px;height: 33px;" onmouseover="this.style.background='#ffb380';" onmouseout="this.style.background='#ff8533';" onclick="hideshow(document.getElementById('round2_main'));">Vượt chướng ngại vật</div>
+			<div id="round2_main" style="height: 470px;display: none;">
+				<button id="load_ques_2_btn" style="float: left;width: 200px;height: 30px;border-width: 0px;margin-top: 20px;background-color: #ffcc00;font-size: 15px;font-weight: bold;margin-left: 10px;" onmouseover="this.style.background='#ffe066';" onmouseout="this.style.background='#ffcc00';" onclick="round_two.load_question();"><i class="fa fa-download"></i> Load câu hỏi</button>
+				<select id="stt1_cnv" style="float: left;height: 30px;width: 60px;margin-left: 60px;margin-top:20px;background-color: black;">
+					<option value="">Chưa</option>
+					<option value="correct">Đúng</option>
+					<option value="wrong">Sai</option>
+				</select>
+				<select id="stt2_cnv" style="float: left;height: 30px;width: 60px;margin-left: 10px;margin-top:20px;background-color: black;">
+					<option value="">Chưa</option>
+					<option value="correct">Đúng</option>
+					<option value="wrong">Sai</option>
+				</select>
+				<select id="stt3_cnv" style="float: left;height: 30px;width: 60px;margin-left: 10px;margin-top:20px;background-color: black;">
+					<option value="">Chưa</option>
+					<option value="correct">Đúng</option>
+					<option value="wrong">Sai</option>
+				</select>
+				<select id="stt4_cnv" style="float: left;height: 30px;width: 60px;margin-left: 10px;margin-top:20px;background-color: black;">
+					<option value="">Chưa</option>
+					<option value="correct">Đúng</option>
+					<option value="wrong">Sai</option>
+				</select>
+				<select id="stt5_cnv" style="float: left;height: 30px;width: 60px;margin-left: 10px;margin-top:20px;background-color: black;">
+					<option value="">Chưa</option>
+					<option value="correct">Đúng</option>
+					<option value="wrong">Sai</option>
+				</select>
+				<button id="save_status_cnv" style="float: left;width: 100px;height: 30px;border-width: 0px;margin-top: 20px;background-color: #ffcc00;font-size: 15px;font-weight: bold;margin-left: 10px;" onmouseover="this.style.background='#ffe066';" onmouseout="this.style.background='#ffcc00';" onclick="round_two.save_status();"><i class="fa fa-save"></i> Lưu</button>
+				<!-- <div style="width: 1000px;float: left;height: 30px;margin-left: 100px;margin-top: 20px;">
+					<div style="width: 100px;margin-right: 20px;float: left;font-size: 20px;font-weight: bold;color: #ffe699;">Status</div>
+					<div style="float: left;height: 20px;margin-top: 5px;">
+						<div id="stt1" style="background-color:#ff0000;width: 200px;height: 20px;float: left;"></div>
+						<div id="stt2" style="background-color:#ff0000;width: 200px;height: 20px;float: left;"></div>
+						<div id="stt3" style="background-color:#ff0000;width: 200px;height: 20px;float: left;"></div>
+						<div id="stt4" style="background-color:#ff0000;width: 200px;height: 20px;float: left;"></div>
+					</div>
+				</div> -->
+				<div style="float: left;margin-top: 20px;margin-left: 50px;width: 1100px;">
+					<div style="font-weight: bold;background-color: #000000;position: absolute;margin-left: 20px;width: 200px;text-align: center;font-size: 17px;"><div style="float: left;margin-left: 42px;margin-right: 5px;">Câu hỏi thứ</div><div id="numques2" style="width: 20px;float: left;">0</div></div>
+					<div id="ques_2" style="width: 960px;height: 150px;border: 1px solid white;border-radius: 10px;margin-top:10px;padding:20px 15px 15px 15px;font-size: 17px;float: left;">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+					tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+					quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+					consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+					cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+					proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
+					<div id="timer_2" style="float: left;width: 50px;font-size: 35px;font-weight: bold;margin-left: 70px;margin-top: 120px;">0</div>
+					<div style="float: left;width: 520px;margin-top: 20px;margin-left: 50px;">
+						<button id="start_2_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #002699;font-weight: bold;border-width: 0px;color: white;" onmouseover="this.style.background='#0039e6';" onmouseout="this.style.background='#002699';" onclick="round_two.start();"><i class="fa fa-play"></i> Bắt đầu</button>
+						<button id="true_2_btn" disabled="true" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #00b300;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;" onmouseover="this.style.background='#00ff00';" onmouseout="this.style.background='#00b300';" onclick="round_two.correct();"><i class="fa fa-check"></i> Đúng</button>
+						<button id="false_2_btn" disabled="true" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #ff0000;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;" onmouseover="this.style.background='#ff4d4d';" onmouseout="this.style.background='#ff0000';" onclick="round_two.wrong();"><i class="fa fa-times"></i> Sai</button>
+						<button id="show_ques_2_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #3399ff;font-weight: bold;border-width: 0px;color: white;margin-top: 10px;" onmouseover="this.style.background='#80bfff';" onmouseout="this.style.background='#3399ff';" onclick="round_two.showques();"><i class="fa fa-info-circle"></i> Hiện câu hỏi</button>
+						<button id="show_ans_2_btn" disabled="true" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #3399ff;font-weight: bold;border-width: 0px;color: white;margin-top: 10px;margin-left: 20px;" onmouseover="this.style.background='#80bfff';" onmouseout="this.style.background='#3399ff';" onclick="round_two.showans();"><i class="fa fa-info-circle"></i> Đáp án</button>
+						<button id="show_img_btn" disabled="true" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #3399ff;font-weight: bold;border-width: 0px;color: white;margin-top: 10px;margin-left: 20px;" onmouseover="this.style.background='#80bfff';" onmouseout="this.style.background='#3399ff';" onclick="round_two.showimg();"><i class="fa fa-image"></i> Mở hình</button>
+						<button id="end_2_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #ff0000;font-weight: bold;border-width: 0px;color: white;margin-top:10px;" onmouseover="this.style.background='#ff4d4d';" onmouseout="this.style.background='#ff0000';" onclick="round_two.end();"><i class="fa fa-arrow-right"></i> Kết thúc đê :v</button>
+						<div style="float: left;margin-top: 10px;">
+							<select id="chooseCNV" style="float: left;height: 25px;background-color: black;border-radius: 5px;width: 250px;">
+								<option>-</option>
+							</select>
+							<button id="true_CNV_btn" class="form-control" style="float: left;padding-top: 3px;background-color: #00b300;font-weight: bold;color: white;margin-left: 10px;height: 25px;width: 100px;border-width: 0px;" onmouseover="this.style.background='#00ff00';" onmouseout="this.style.background='#00b300';" onclick="round_two.correctCNV();">Đúng</button>
+							<button id="false_CNV_btn" class="form-control" style="float: left;padding-top: 3px;background-color: #ff0000;font-weight: bold;color: white;margin-left: 10px;height: 25px;width: 100px;border-width: 0px;" onmouseover="this.style.background='#ff4d4d';" onmouseout="this.style.background='#ff0000';" onclick="round_two.wrongCNV();">Sai</button>
+						</div>
+					</div>
+					<div style="width: 250px;float: left;margin-top: 20px;">
+						<div id="cnv_ans1" style="width: 250px;float: left;border-radius: 5px;border: 1px solid #ff0000;margin-bottom: 5px;text-align: center;height: 30px;padding-top:3px;"onclick="round_two.judge(0);">Answer_1</div>
+						<div id="cnv_ans2" style="width: 250px;float: left;border-radius: 5px;border: 1px solid #ff0000;margin-bottom: 5px;text-align: center;height: 30px;padding-top:3px;"onclick="round_two.judge(1);">Answer_2</div>
+						<div id="cnv_ans3" style="width: 250px;float: left;border-radius: 5px;border: 1px solid #ff0000;margin-bottom: 5px;text-align: center;height: 30px;padding-top:3px;"onclick="round_two.judge(2);">Answer_3</div>
+						<div id="cnv_ans4" style="width: 250px;float: left;border-radius: 5px;border: 1px solid #ff0000;text-align: center;height: 30px;padding-top:3px;"onclick="round_two.judge(3);">Answer_4</div>
+					</div>
+					<div style="width: 250px;float: left;margin-top: 21px;margin-left: 20px;">
+						<div id="cnv_1" style="width: 250px;float: left;height: 28px;border-radius: 5px;background-color: #ff8000;margin-bottom: 7px;text-align: center;padding-top:3px;display: none;" >Thí sinh 1</div>
+						<div id="cnv_2" style="width: 250px;float: left;height: 28px;border-radius: 5px;background-color: #ff8000;margin-bottom: 7px;text-align: center;padding-top:3px;display: none;">Thí sinh 2</div>
+						<div id="cnv_3" style="width: 250px;float: left;height: 28px;border-radius: 5px;background-color: #ff8000;margin-bottom: 7px;text-align: center;padding-top:3px;display: none;">Thí sinh 3</div>
+						<div id="cnv_4" style="width: 250px;float: left;height: 28px;border-radius: 5px;background-color: #ff8000;text-align: center;padding-top:3px;display: none;">Thí sinh 4</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div style="width: 1280px;margin-left: 20px;margin-top: 20px;">
+				<div style="font-size: 20px;color: white;font-family: arial; background-color: #ff8533;padding-left: 50px;padding-bottom: 5px;width: 500px;height: 33px;" onmouseover="this.style.background='#ffb380';" onmouseout="this.style.background='#ff8533';" onclick="hideshow(document.getElementById('round3_main'));">Tăng tốc</div>
+				<div id="round3_main" style="height: 490px;display: none;">
+				<button id="load_ques_3_btn" style="float: left;width: 200px;height: 30px;border-width: 0px;margin-top: 20px;background-color: #ffcc00;font-size: 15px;font-weight: bold;margin-left: 10px;" onmouseover="this.style.background='#ffe066';" onmouseout="this.style.background='#ffcc00';" onclick="round_three.load_question();"><i class="fa fa-download"></i> Load câu hỏi</button>
+				<div style="width: 1000px;float: left;height: 30px;margin-left: 100px;margin-top: 20px;">
+					<div style="width: 100px;margin-right: 20px;float: left;font-size: 20px;font-weight: bold;color: #ffe699;">Status</div>
+					<div style="float: left;height: 20px;margin-top: 5px;">
+						<div id="stt_tt1" style="background-color:#ff0000;width: 130px;height: 20px;float: left;"></div>
+						<div id="stt_tt2" style="background-color:#ff0000;width: 130px;height: 20px;float: left;"></div>
+						<div id="stt_tt3" style="background-color:#ff0000;width: 130px;height: 20px;float: left;"></div>
+						<div id="stt_tt4" style="background-color:#ff0000;width: 130px;height: 20px;float: left;"></div>
+						<div id="stt_tt5" style="background-color:#ff0000;width: 130px;height: 20px;float: left;"></div>
+						<div id="stt_tt6" style="background-color:#ff0000;width: 130px;height: 20px;float: left;"></div>
+					</div>
+				</div>
+				<div style="float: left;margin-top: 20px;margin-left: 50px;width: 1100px;">
+					<div style="font-weight: bold;background-color: #000000;position: absolute;margin-left: 20px;width: 200px;text-align: center;font-size: 17px;"><div style="float: left;margin-left: 42px;margin-right: 5px;">Câu hỏi thứ</div><div id="numques3" style="width: 20px;float: left;">0</div></div>
+					<div id="ques_3" style="width: 960px;height: 150px;border: 1px solid white;border-radius: 10px;margin-top:10px;padding:20px 15px 15px 15px;font-size: 17px;float: left;">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+					tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+					quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+					consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+					cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+					proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
+					<div id="timer_3" style="float: left;width: 50px;font-size: 35px;font-weight: bold;margin-left: 70px;margin-top: 120px;">0</div>
+					<div style="float: left;width: 520px;margin-top: 20px;margin-left: 50px;">
+						<button id="start_3_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #002699;font-weight: bold;border-width: 0px;color: white;" onmouseover="this.style.background='#0039e6';" onmouseout="this.style.background='#002699';" onclick="round_three.start();"><i class="fa fa-play"></i> Bắt đầu</button>
+						<button id="true_3_btn" disabled="true" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #00b300;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;" onmouseover="this.style.b4ackground='#00ff00';" onmouseout="this.style.background='#00b300';" onclick="round_three.correct();"><i class="fa fa-check"></i> Đúng</button>
+						<button id="false_3_btn" disabled="true" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #ff0000;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;" onmouseover="this.style.background='#ff4d4d';" onmouseout="this.style.background='#ff0000';" onclick="round_three.wrong();"><i class="fa fa-times"></i> Sai</button>
+						<button id="show_ques_3_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #ffcc00;font-weight: bold;border-width: 0px;color: white;margin-top: 10px;" onmouseover="this.style.background='#ffe066';" onmouseout="this.style.background='#ffcc00';" onclick="round_three.show();"><i class="fa fa-question"></i> Câu hỏi</button>
+						<button id="sort_ans_3_btn" disabled="true" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #3399ff;font-weight: bold;border-width: 0px;color: white;margin-top: 10px;margin-left: 20px;" onmouseover="this.style.background='#80bfff';" onmouseout="this.style.background='#3399ff';" onclick="round_three.sort();"><i class="fa fa-refresh"></i> Sort</button>
+						<button id="show_ans_3_btn" disabled="true" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #3399ff;font-weight: bold;border-width: 0px;color: white;margin-top: 10px;margin-left: 20px;" onmouseover="this.style.background='#80bfff';" onmouseout="this.style.background='#3399ff';" onclick="round_three.showans();"><i class="fa fa-info-circle"></i> Đáp án</button>
+						<button id="next_ques_3_btn" disabled="true" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #3399ff;font-weight: bold;border-width: 0px;color: white;margin-top: 10px;" onmouseover="this.style.background='#80bfff';" onmouseout="this.style.background='#3399ff';" onclick="round_three.nextques();"><i class="fa fa-arrow-right"></i> Next đê :v</button>
+					</div>
+					<div style="width: 250px;float: left;margin-top: 20px;">
+						<div id="tt_ans1" style="width: 250px;float: left;border-radius: 5px;border: 1px solid #ff0000;margin-bottom: 5px;text-align: center;height: 30px;padding-top:3px;"onclick="round_three.judge(0);">Answer_1</div>
+						<div id="tt_ans2" style="width: 250px;float: left;border-radius: 5px;border: 1px solid #ff0000;margin-bottom: 5px;text-align: center;height: 30px;padding-top:3px;"onclick="round_three.judge(1);">Answer_2</div>
+						<div id="tt_ans3" style="width: 250px;float: left;border-radius: 5px;border: 1px solid #ff0000;margin-bottom: 5px;text-align: center;height: 30px;padding-top:3px;"onclick="round_three.judge(2);">Answer_3</div>
+						<div id="tt_ans4" style="width: 250px;float: left;border-radius: 5px;border: 1px solid #ff0000;text-align: center;height: 30px;padding-top:3px;"onclick="round_three.judge(3);">Answer_4</div>
+					</div>
+					<div style="width: 250px;float: left;margin-top: 20px;margin-left: 20px;">
+						<div id="tt_time1" style="width: 250px;float: left;border-radius: 5px;border: 1px solid white;margin-bottom: 5px;text-align: center;height: 30px;padding-top:3px;">0.00</div>
+						<div id="tt_time2" style="width: 250px;float: left;border-radius: 5px;border: 1px solid white;margin-bottom: 5px;text-align: center;height: 30px;padding-top:3px;">0.00</div>
+						<div id="tt_time3" style="width: 250px;float: left;border-radius: 5px;border: 1px solid white;margin-bottom: 5px;text-align: center;height: 30px;padding-top:3px;">0.00</div>
+						<div id="tt_time4" style="width: 250px;float: left;border-radius: 5px;border: 1px solid white;text-align: center;height: 30px;padding-top:3px;">0.00</div>
+					</div>
+				</div>
+				</div>
+		</div>
+		<div style="width: 1280px;margin-left: 20px;margin-top:20px;">
+				<div style="font-size: 20px;color: white;font-family: arial; background-color: #ff8533;padding-left: 50px;padding-bottom: 5px;width: 500px;height: 33px;" onmouseover="this.style.background='#ffb380';" onmouseout="this.style.background='#ff8533';" onclick="hideshow(document.getElementById('round4_main'));">Về đích</div>
+				<div id="round4_main" style="height: 470px;display: none;">
+				<button id="load_ques_4_btn" style="float: left;width: 200px;height: 30px;border-width: 0px;margin-top: 20px;background-color: #ffcc00;font-size: 15px;font-weight: bold;margin-left: 10px;" onmouseover="this.style.background='#ffe066';" onmouseout="this.style.background='#ffcc00';" onclick="round_four.load_question();"><i class="fa fa-download"></i> Load câu hỏi</button>
+				<div style="float: left;margin-top: 20px;margin-left: 50px;width: 1100px;">
+					<div style="font-weight: bold;background-color: #000000;position: absolute;margin-left: 20px;width: 200px;text-align: center;font-size: 17px;"><div style="float: left;margin-left: 42px;margin-right: 5px;">Câu hỏi thứ</div><div id="numques4" style="width: 20px;float: left;">0</div></div>
+					<div id="ques_4" style="width: 960px;height: 150px;border: 1px solid white;border-radius: 10px;margin-top:10px;padding:20px 15px 15px 15px;font-size: 17px;float: left;">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+					tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+					quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+					consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+					cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+					proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
+					<div id="timer_4" style="float: left;width: 50px;font-size: 35px;font-weight: bold;margin-left: 70px;margin-top: 120px;">0</div>
+					<div style="float: left;width: 800px;margin-top: 20px;margin-left: 50px;">
+						<div style="float:left;width:800px;">
+							<div style="float: left;margin-top: 10px;margin-left:10px;width:350px;">
+								<select id="choosepack" style="float: left;height: 30px;background-color: black;border-radius: 5px;width: 100px;">
+									<option>-</option>
+									<option value="0">Gói 10</option>
+									<option value="1">Gói 20</option>
+									<option value="2">Gói 30</option>
+								</select>
+								<button id="pack_btn" class="form-control" style="float: left;padding-top: 3px;background-color: #00b300;font-weight: bold;color: white;margin-left: 10px;height: 30px;width: 200px;border-width: 0px;" onmouseover="this.style.background='#00ff00';" onmouseout="this.style.background='#00b300';" onclick="round_four.choosepack();">Chọn gói câu hỏi</button>
+							</div>
+							<button id="showques_4_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #002699;font-weight: bold;border-width: 0px;color: white;" onmouseover="this.style.background='#0039e6';" onmouseout="this.style.background='#002699';" onclick="round_four.showques();"><i class="fa fa-info-circle"></i> Hiện câu hỏi</button>
+							<button id="start_4_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #002699;font-weight: bold;border-width: 0px;color: white;margin-left:20px;" onmouseover="this.style.background='#0039e6';" onmouseout="this.style.background='#002699';" onclick="round_four.start();"><i class="fa fa-play"></i> Bắt đầu</button>
+						</div>
+						<button id="true_4_btn" disabled="true" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #00b300;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;margin-top: 10px;" onmouseover="this.style.background='#00ff00';" onmouseout="this.style.background='#00b300';" onclick="round_four.correct();"><i class="fa fa-check"></i> Đúng</button>
+						<button id="false_4_btn" disabled="true" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #ff0000;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;margin-top: 10px;" onmouseover="this.style.background='#ff4d4d';" onmouseout="this.style.background='#ff0000';" onclick="round_four.wrong();"><i class="fa fa-times"></i> Sai</button>
+						<button id="hope_4_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #ffcc00;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;margin-top: 10px;" onmouseover="this.style.background='#ffe066';" onmouseout="this.style.background='#ffcc00';" onclick="round_four.hope();">NSHV <i class="fa fa-star"></i></button>
+						<button id="waitttt_4_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #3399ff;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;margin-top: 10px;" onmouseover="this.style.background='#80bfff';" onmouseout="this.style.background='#3399ff';" onclick="round_four.wait();"><i class="fas fa-clock"></i> 5s Waiting</button>
+						<button id="vidpls_4_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #3399ff;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;margin-top: 10px;" onmouseover="this.style.background='#80bfff';" onmouseout="this.style.background='#3399ff';" onclick="round_four.showvid();"><i class="fas fa-info-circle"></i> Hiện video</button>
+						<button id="nextques_4_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #3399ff;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;margin-top: 10px;" onmouseover="this.style.background='#80bfff';" onmouseout="this.style.background='#3399ff';" onclick="round_four.nextques();">Câu tiếp theo <i class="fa fa-arrow-right"></i></button>
+						<button id="next_4_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #ffcc00;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;margin-top: 10px;" onmouseover="this.style.background='#ffe066';" onmouseout="this.style.background='#ffcc00';" onclick="round_four.next();">Đứa khác :v <i class="fa fa-arrow-right"></i></button>
+						<div style="float: left;margin-top: 10px;width:500px;">
+							<select id="choosevd" style="float: left;height: 30px;background-color: black;border-radius: 5px;width: 250px;" onchange="round_four.taker=$('#choosevd').val();">
+								<option>-</option>
+							</select>
+							<!-- <button id="true_vd_btn" class="form-control" style="float: left;padding-top: 3px;background-color: #00b300;font-weight: bold;color: white;margin-left: 10px;height: 25px;width: 100px;border-width: 0px;" onmouseover="this.style.background='#00ff00';" onmouseout="this.style.background='#00b300';" onclick="round_four.correct();">Đúng</button>
+							<button id="false_vd_btn" class="form-control" style="float: left;padding-top: 3px;background-color: #ff0000;font-weight: bold;color: white;margin-left: 10px;height: 25px;width: 100px;border-width: 0px;" onmouseover="this.style.background='#ff4d4d';" onmouseout="this.style.background='#ff0000';" onclick="round_four.wrong();">Sai</button> -->
+						</div>
+					</div>
+					<div style="width: 250px;float: left;margin-top: 20px;">
+						<button id="vd_ques1" style="overflow: hidden;width: 250px;float: left;border-radius: 5px;margin-bottom: 5px;text-align: center;height: 30px;padding-top:3px;background-color:black;"onclick="round_four.chooseques(0);">Câu 1</button>
+						<button id="vd_ques2" style="overflow: hidden;width: 250px;float: left;border-radius: 5px;margin-bottom: 5px;text-align: center;height: 30px;padding-top:3px;background-color:black;"onclick="round_four.chooseques(1);">Câu 2</button>
+						<button id="vd_ques3" style="overflow: hidden;width: 250px;float: left;border-radius: 5px;margin-bottom: 5px;text-align: center;height: 30px;padding-top:3px;background-color:black;"onclick="round_four.chooseques(2);">Câu 3</button>
+					</div>
+				</div>
+				</div>
+		</div>
+		<div style="width: 1280px;margin-left: 20px;margin-top: 20px">
+				<div style="font-size: 20px;color: white;font-family: arial; background-color: #ff8533;padding-left: 50px;padding-bottom: 5px;width: 500px;height: 33px;" onmouseover="this.style.background='#ffb380';" onmouseout="this.style.background='#ff8533';" onclick="hideshow(document.getElementById('round5_main'));">Câu hỏi phụ</div>
+				<div id="round5_main" style="height: 330px;display: none;">
+				<button id="load_ques_5_btn" style="float: left;width: 200px;height: 30px;border-width: 0px;margin-top: 20px;background-color: #ffcc00;font-size: 15px;font-weight: bold;margin-left: 10px;" onmouseover="this.style.background='#ffe066';" onmouseout="this.style.background='#ffcc00';" onclick="round_five.load_question();"><i class="fa fa-download"></i> Load câu hỏi</button>
+				<div style="float: left;margin-top: 20px;margin-left: 50px;width: 1100px;">
+					<div style="font-weight: bold;background-color: #000000;position: absolute;margin-left: 20px;width: 200px;text-align: center;font-size: 17px;"><div style="float: left;margin-left: 42px;margin-right: 5px;">Câu hỏi thứ</div><div id="numques5" style="width: 20px;float: left;">0</div></div>
+					<div id="ques_5" style="width: 960px;height: 150px;border: 1px solid white;border-radius: 10px;margin-top:10px;padding:20px 15px 15px 15px;font-size: 17px;float: left;">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+					tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+					quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+					consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+					cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+					proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
+					<div style="float: left;width: 900px;margin-top: 20px;margin-left: 50px;">
+						<button id="start_5_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #002699;font-weight: bold;border-width: 0px;color: white;" onmouseover="this.style.background='#0039e6';" onmouseout="this.style.background='#002699';" onclick="round_five.start();"><i class="fa fa-play"></i> Bắt đầu</button>
+						<button id="true_5_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #00b300;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;" onmouseover="this.style.background='#00ff00';" onmouseout="this.style.background='#00b300';" onclick="round_five.correct();"><i class="fa fa-check"></i> Đúng</button>
+						<button id="false_5_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #ff0000;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;" onmouseover="this.style.background='#ff4d4d';" onmouseout="this.style.background='#ff0000';" onclick="round_five.wrong();"><i class="fa fa-times"></i> Sai</button>
+						<button id="time_resume" disabled="true" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #002699;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;" onmouseover="this.style.background='#0039e6';" onmouseout="this.style.background='#002699';"><i class="fa fa-arrow-right"></i> Chạy thời gian</button>
+						<button id="false_5_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #002699;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;" onmouseover="this.style.background='#0039e6';" onmouseout="this.style.background='#002699';" onclick="round_five.next();"><i class="fa fa-arrow-right"></i> Next</button>
+						<select id="name_5" style="margin: 10px 10px 10px 10px;width: 200px; height: 30px; line-height: 30px;border: 1px white solid;border-radius: 5px;float: left; margin-left: 20px;background-color: black; color: white">
+							<option>-</option>
+						</select>
+					</div>
+				</div>
+				</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="/static/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/static/js/init.js"></script>
+	<script type="text/javascript" src="/static/js/control.js"></script>
+	</body>
+</html>
