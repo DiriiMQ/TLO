@@ -780,6 +780,7 @@ const round_three = {
 const round_four = {
 	quesid: 0,
 	questions: [],
+	done: [0, 0, 0, 0],
 	// scs:[[10,10,20],[10,20,30],[20,30,30]],
 	scs: [10, 20, 30],
 	// time:[[10,10,15],[10,15,20],[15,20,20]],
@@ -840,7 +841,21 @@ const round_four = {
 		send_mess("controller","viewer","showvid");
 	},
 	next:function(){
-		curcon++;
+		var tmp = [];
+		for(var i = 0; i < 4; i++){
+			tmp.push([contestants[i], i]);
+		}
+		tmp.sort((a, b) => parseInt(a[0].score) - parseInt(b[0].score));
+		curcon = 4;
+		for(var i = 0; i < 4; i++){
+			if(round_four.done[tmp[i][1]] == 0){
+				round_four.done[tmp[i][1]] = 1;
+				curcon = tmp[i][1];
+				break;
+			}
+		}
+		console.log('Status round 4');
+		console.log(round_four.done);
 		curques=-1;
 		curpack=0;
 		$("#curcon_edit").val(curcon);
