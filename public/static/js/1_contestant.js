@@ -130,13 +130,34 @@ const update = function(){
 	});
 }
 
+const loadq = function(){
+	if(curmatch == undefined){
+		send_mess(boku, "controller", "failed_loadques");
+		return;
+	} else{
+		(curmatch!= void 0) && _fetch("/apix/read_file",{file:`static/data/${curmatch}_1_question.txt`}).then((callback) => {
+			questions=b64DecodeUnicode(callback);
+			questions=JSON.parse(questions);
+			questions = questions.ques;
+			console.log(questions);
+			if(questions.length > 0){
+				send_mess(boku, "controller", "loaded_ques");
+			} else{
+				send_mess(boku, "controller", "failed_loadques");
+			}
+		});
+	}
+}
+
 const loadques = function() {
-	(curmatch!= void 0) && _fetch("/apix/read_file",{file:`static/data/${curmatch}_1_question.txt`}).then((callback) => {
-		questions=b64DecodeUnicode(callback);
-		questions=JSON.parse(questions);
-		questions = questions.ques;
-		console.log(questions);
-	});
+	if(curmatch == undefined){
+		send_mess(boku, "controller", "get_curmatch");
+		setTimeout(() => {
+			console.log(curmatch);
+			update();
+			send_mess(boku, "controller", "failed_loadques");
+		}, 2000);
+	} else loadq();
 }
 
 const correct = function() {
@@ -166,7 +187,7 @@ socket.on('message',function(msg){
 	let receiver=msg[0].receiver;
 	let content=msg[0].content;
 	//alert(content);
-	if(receiver == "contestants"){
+	if(receiver == "contestants" || receiver == boku){
 		//alert("got it");
 		switch(content){
 			case "test":{

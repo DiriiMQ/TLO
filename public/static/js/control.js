@@ -355,6 +355,7 @@ const round_one = {
 			callback=b64DecodeUnicode(callback);
 			round_one.questions=JSON.parse(callback);
 		}).then(function(){alert("Load xong câu hỏi vòng 1 rồi nè");});
+		console.log('Controller has loaded ques round 1');
 		send_mess("controller","contestants","loadques");
 		send_mess("controller","viewer","loadques");
 	},
@@ -1039,6 +1040,18 @@ socket.on("message",function(msg){
 	let sender = msg[0].sender;
 	if(receiver == "controller"){
 		switch(content){
+			case "get_curmatch":{
+				send_mess("controller", sender, "match"+curmatch);
+			};
+			break;
+			case "loaded_ques":{
+				console.log(parseInt(parseInt(sender) + 1) + ' ' + content);
+			};
+			break;
+			case "failed_loadques":{
+				console.log(parseInt(parseInt(sender) + 1) + ' ' + content);
+			};
+			break;
 			case "CNV":{
 				if (round_two.CNV[parseInt(sender)]) return;
 				round_two.CNV[parseInt(sender)]=true;
