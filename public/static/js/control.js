@@ -282,6 +282,7 @@ function save_status(){
 		curques:curques,
 		curpack:curpack
 	});
+	console.log("Controller save status");
 	console.log(data);
 	data=JSON.stringify(data);
 	data=b64EncodeUnicode(data);
@@ -403,6 +404,14 @@ const round_one = {
 	},
 	start: function(){
 		//enabled($("#start_1_btn"));
+		if(round_one.questions.length == 0){
+			alert("Load câu hỏi đeee");
+			return;
+		}
+		if(curcon == -1 || curround != 0 || curcon != $("#curcon_edit").val()){
+			alert("Kiểm tra overall status đeeee");
+			return;
+		}
 		send_mess("controller","contestants","start");
 		send_mess("controller","viewer","start");
 		disabled($('#start_1_btn'))
@@ -1047,6 +1056,12 @@ $("#time_resume").on('click', function(){
 	send_mess("controller","contestants","resume");
 });
 let t;
+
+const writeLog = (content, sender) => {
+	if(sender == "viewer" || sender == 'mc') console.log(sender + ' ' + content);
+	else console.log(parseInt(parseInt(sender) + 1) + ' ' + content);
+} 
+
 socket.on("message",function(msg){
 	msg=b64DecodeUnicode(msg);
 	msg=JSON.parse(msg);
@@ -1055,16 +1070,21 @@ socket.on("message",function(msg){
 	let sender = msg[0].sender;
 	if(receiver == "controller"){
 		switch(content){
+			case "confirmed":{
+				writeLog(content + " stt", sender);
+			};
+			break;
 			case "get_curmatch":{
 				send_mess("controller", sender, "match"+curmatch);
+				writeLog("is reconnecting", sender);
 			};
 			break;
 			case "loaded_ques":{
-				console.log(parseInt(parseInt(sender) + 1) + ' ' + content);
+				writeLog(content, sender);
 			};
 			break;
 			case "failed_loadques":{
-				console.log(parseInt(parseInt(sender) + 1) + ' ' + content);
+				writeLog(content, sender);
 			};
 			break;
 			case "CNV":{

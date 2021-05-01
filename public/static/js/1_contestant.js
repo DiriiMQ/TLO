@@ -1,3 +1,7 @@
+/*
+	trước mỗi lần start thì phải check trên overall status
+*/
+
 const score=$("#score");
 const question=$("#question");
 var curmatch;
@@ -109,6 +113,7 @@ const update = function(){
 	}).then((res) => {
 		res=b64DecodeUnicode(res);
 		res=JSON.parse(res);
+		send_mess(boku, "controller", "confirmed");
 		console.log(res);
 		idq=res[0].curques;
 		ids=(res[0].curcon==-1)?(0):(res[0].curcon);
@@ -151,11 +156,11 @@ const loadq = function(){
 
 const loadques = function() {
 	if(curmatch == undefined){
+		send_mess(boku, "controller", "failed_loadques");
 		send_mess(boku, "controller", "get_curmatch");
 		setTimeout(() => {
 			console.log(curmatch);
 			update();
-			send_mess(boku, "controller", "failed_loadques");
 		}, 2000);
 	} else loadq();
 }
@@ -192,6 +197,8 @@ socket.on('message',function(msg){
 		switch(content){
 			case "test":{
 				send_mess(boku,"controller","ok");
+				if(questions.length == 0) send_mess(boku, "controller", "failed_loadques");
+				else send_mess(boku, "controller", "loaded_ques");
 			};
 			break;
 			case "update":{
