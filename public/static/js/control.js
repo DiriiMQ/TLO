@@ -498,10 +498,13 @@ const round_two = {
 		});
 	},
 	load_question: function(){
+		// $("#curques_edit").val("-1");
+		// save_status();
 		_fetch("/apix/read_file", {file: `static/data/${curmatch}_2_question.txt`}).then((callback) => {
 			round_two.questions=b64DecodeUnicode(callback);
 			round_two.questions=JSON.parse(round_two.questions);
 		}).then(function(){alert("Vòng 2 load xong luôn r đó");});
+		console.log('Controller has loaded ques round 2');
 		send_mess("controller","contestants","loadques");
 		send_mess("controller","viewer","loadques");
 	},
@@ -530,6 +533,15 @@ const round_two = {
 		});
 	},
 	showques: function(){
+		if(round_two.questions.length == 0){
+			alert("Load câu hỏi đeee");
+			return;
+		}
+		if(curques == -1 || curround != 1 || curques != $("#curques_edit").val()){
+			alert("Kiểm tra overall status đeeee");
+			return;
+		}
+		enabled($("#start_2_btn"));
 		send_mess('controller','viewer','showques');
 		send_mess('controller','contestants','showques')
 	},
@@ -540,7 +552,7 @@ const round_two = {
 			return;
 		}
 		$("#ques_2").html(round_two.questions[curques]);
-		disabled($("#show_ans_2_btn"));disabled($("#true_2_btn"));disabled($("#false_2_btn"));disabled($("#show_img_btn"));
+		disabled($("#show_ans_2_btn"));disabled($("#true_2_btn"));disabled($("#false_2_btn"));disabled($("#show_img_btn"));disabled($("#start_2_btn"));
 		for(var i = 1; i <= 4; i++){
 			$("#cnv_ans" + i).html('')
 		}
@@ -553,7 +565,7 @@ const round_two = {
 		$("#ques_2").html(round_two.questions[curques]);
 		send_mess("controller","contestants","start");
 		send_mess("controller","viewer","start");
-		setTimeout(function() {enabled($("#show_ans_2_btn"));enabled($("#true_2_btn"));enabled($("#false_2_btn"));}, 15000);
+		setTimeout(function() {enabled($("#show_ans_2_btn"));}, 15000);
 	},
 	end: function(){
 		send_mess("controller","contestants","end");
@@ -574,8 +586,11 @@ const round_two = {
 		$("#con"+parseInt(parseInt($("#chooseCNV").val())+1)+"_score").html(contestants[$("#chooseCNV").val()].score);
 		send_mess("controller","viewer","update");
 		send_mess("controller","contestants","update");
+		for(var i = 0; i < 5; i++)
+			$("#stt"+parseInt(parseInt(i)+1)+"_cnv").val("correct");
 	},
 	wrong:function(){
+		disabled($("#show_img_btn"));
 		send_mess("controller","viewer","wrong");
 		send_mess("controller","contestants","wrong");
 		$("#stt"+parseInt(parseInt(curques)+1)+"_cnv").val("wrong");
@@ -600,6 +615,7 @@ const round_two = {
 		data=round_two.ans;
 		data=JSON.stringify(data);
 		data=b64EncodeUnicode(data);
+		enabled($("#true_2_btn"));enabled($("#false_2_btn"));
 		_fetch("/apix/update_file",{
 			file:`static/data/${curmatch}_ansts.txt`,
 			data:data
@@ -1071,6 +1087,10 @@ socket.on("message",function(msg){
 	let sender = msg[0].sender;
 	if(receiver == "controller"){
 		switch(content){
+			case "checkCNV":{
+				if(round_two.CNV[parseInt(sender)]) send_mess("controller", sender, "blockCNV");
+			};
+			break;
 			case "confirmed":{
 				writeLog(content + " stt", sender);
 			};
@@ -1093,7 +1113,6 @@ socket.on("message",function(msg){
 				round_two.CNV[parseInt(sender)]=true;
 				round_two.count++;
 				console.log(sender);
-
 				$("#cnv_"+parseInt(round_two.count)).html(contestants[parseInt(sender)].name);
 				document.getElementById("cnv_"+parseInt(round_two.count)).style.display="block";
 				$("#chooseCNV").append($(`<option>`,{

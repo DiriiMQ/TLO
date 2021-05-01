@@ -225,8 +225,8 @@ socket.on('message',function(msg){
 				nextcontestant();
 			};
 			break;
-      default:
-        if (content.startsWith("match")) curmatch = content.replace("match","");
+			default:
+				if(content.startsWith("match")) curmatch = content.replace("match","");
 		}
 	}
 });

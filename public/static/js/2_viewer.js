@@ -159,7 +159,8 @@ const update = async () => {
   	await _fetch("/apix/read_file",{file:`static/data/${curmatch}_status.txt`}).then((res) => {
   		res = b64DecodeUnicode(res);
   		res = JSON.parse(res);
-  		if(curques != res[0].curques){
+		send_mess("viewer", "controller", "confirmed");
+  		if(curques != res[0].curques && res[0].curques != "-1"){
   			sfx['chooseques'].pause();
   			sfx['chooseques'].currentTime = 0
   			sfx['chooseques'].play().catch(err => {});
@@ -183,27 +184,41 @@ const update = async () => {
 }
 
 const loadques = async () => {
+	if(curmatch == undefined){
+		send_mess("viewer", "controller", "failed_loadques");
+		send_mess("viewer", "controller", "get_curmatch");
+		setTimeout(() => {
+			console.log(curmatch);
+			update();
+		}, 2000);
+		return;
+	}
 	resetimg();
-  if (curmatch!= void 0) {
-  	_fetch("/apix/read_file",{file:`static/data/${curmatch}_2_question.txt`}).then((res) => {
-  		res = b64DecodeUnicode(res);
-  		questions = JSON.parse(res);
-  	});
-  	_fetch("/apix/read_file",{file:`static/data/${curmatch}_ans.txt`}).then((res) => {
-  		res = b64DecodeUnicode(res);
-  		ans = JSON.parse(res);
-  		for(index in ans){
-  			ans[index] = ans[index].toUpperCase().split(" ").join("");
-  		}
-  		appendhn();
-  	});
-  	// alert(ans)
-  	await _fetch("/apix/read_file",{file:`static/data/${curmatch}_stt.txt`}).then((res) => {
-  		res = b64DecodeUnicode(res);
-  		stt = JSON.parse(res);
-  	});
-  	// alert(stt)
-  }
+	if (curmatch!= void 0) {
+		_fetch("/apix/read_file",{file:`static/data/${curmatch}_2_question.txt`}).then((res) => {
+			res = b64DecodeUnicode(res);
+			questions = JSON.parse(res);
+		});
+		_fetch("/apix/read_file",{file:`static/data/${curmatch}_ans.txt`}).then((res) => {
+			res = b64DecodeUnicode(res);
+			ans = JSON.parse(res);
+			for(index in ans){
+				ans[index] = ans[index].toUpperCase().split(" ").join("");
+			}
+			appendhn();
+		});
+		if(questions.length > 0){
+			send_mess("viewer", "controller", "loaded_ques");
+		} else{
+			send_mess("viewer", "controller", "failed_loadques");
+		}
+		// alert(ans)
+		await _fetch("/apix/read_file",{file:`static/data/${curmatch}_stt.txt`}).then((res) => {
+			res = b64DecodeUnicode(res);
+			stt = JSON.parse(res);
+		});
+		// alert(stt)
+	}
 	for(index in stt){
 		switch(stt[index]){
 			case "wrong":{
@@ -357,6 +372,8 @@ socket.on("message",async (msg) => {
 			break;
 			case "test":{
 				send_mess("viewer","controller","ok");
+				if(questions.length == 0) send_mess("viewer", "controller", "failed_loadques");
+				else send_mess("viewer", "controller", "loaded_ques");
 			};
 			break;
 			case "status":{
