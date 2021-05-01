@@ -147,6 +147,7 @@ const update = async () => {
 			// console.log(res)
 			res = b64DecodeUnicode(res);
 			res = JSON.parse(res);
+			send_mess("viewer", "controller", "confirmed");
 			console.log(res);
 			idq=res[0].curques;
 			ids=(res[0].curcon==-1)?(0):(res[0].curcon);
@@ -172,13 +173,34 @@ const update = async () => {
 	$('#timer_slider').animate({opacity:'1'},0);
 }
 
-const loadques = () => {
-	(curmatch!= void 0) && _fetch("/apix/read_file",{file:`static/data/${curmatch}_1_question.txt`}).then((callback) => {
-		questions=b64DecodeUnicode(callback);
-		questions=JSON.parse(questions);
-		questions = questions.ques;
-		console.log(questions);
-	});
+const loadq = function(){
+	if(curmatch == undefined){
+		send_mess("viewer", "controller", "failed_loadques");
+		return;
+	} else{
+		(curmatch!= void 0) && _fetch("/apix/read_file",{file:`static/data/${curmatch}_1_question.txt`}).then((callback) => {
+			questions=b64DecodeUnicode(callback);
+			questions=JSON.parse(questions);
+			questions = questions.ques;
+			console.log(questions);
+			if(questions.length > 0){
+				send_mess("viewer", "controller", "loaded_ques");
+			} else{
+				send_mess("viewer", "controller", "failed_loadques");
+			}
+		});
+	}
+}
+
+const loadques = function() {
+	if(curmatch == undefined){
+		send_mess("viewer", "controller", "failed_loadques");
+		send_mess("viewer", "controller", "get_curmatch");
+		setTimeout(() => {
+			console.log(curmatch);
+			update();
+		}, 2000);
+	} else loadq();
 }
 
 const correct = () => {
@@ -243,6 +265,8 @@ socket.on("message",(msg) => {
 			break;
 			case "test":{
 				send_mess("viewer","controller","ok");
+				if(questions.length == 0) send_mess("viewer", "controller", "failed_loadques");
+				else send_mess("viewer", "controller", "loaded_ques");
 			};
 			break;
 			default:

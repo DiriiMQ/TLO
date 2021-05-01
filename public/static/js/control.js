@@ -100,6 +100,7 @@ function send_mess(sender,receiver,content){
 };
 
 function check_status(){
+	console.log("Checking...");
 	send_mess("controller","contestants","test");
 	for(var i=1;i<=4;i++){
 		document.getElementById("stt"+i).style.background="#ff0000";
