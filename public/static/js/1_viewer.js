@@ -174,22 +174,17 @@ const update = async () => {
 }
 
 const loadq = function(){
-	if(curmatch == undefined){
-		send_mess("viewer", "controller", "failed_loadques");
-		return;
-	} else{
-		(curmatch!= void 0) && _fetch("/apix/read_file",{file:`static/data/${curmatch}_1_question.txt`}).then((callback) => {
-			questions=b64DecodeUnicode(callback);
-			questions=JSON.parse(questions);
-			questions = questions.ques;
-			console.log(questions);
-			if(questions.length > 0){
-				send_mess("viewer", "controller", "loaded_ques");
-			} else{
-				send_mess("viewer", "controller", "failed_loadques");
-			}
-		});
-	}
+	(curmatch!= void 0) && _fetch("/apix/read_file",{file:`static/data/${curmatch}_1_question.txt`}).then((callback) => {
+		questions=b64DecodeUnicode(callback);
+		questions=JSON.parse(questions);
+		questions = questions.ques;
+		console.log(questions);
+		if(questions.length > 0){
+			send_mess("viewer", "controller", "loaded_ques");
+		} else{
+			send_mess("viewer", "controller", "failed_loadques");
+		}
+	});
 }
 
 const loadques = function() {
