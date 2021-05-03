@@ -1087,6 +1087,10 @@ socket.on("message",function(msg){
 	let sender = msg[0].sender;
 	if(receiver == "controller"){
 		switch(content){
+			case "loading_sound":{
+				writeLog(content, sender);
+			};
+			break;
 			case "checkCNV":{
 				if(round_two.CNV[parseInt(sender)]) send_mess("controller", sender, "blockCNV");
 			};
@@ -1148,7 +1152,7 @@ socket.on("message",function(msg){
 			};
 			break;
 			case "sound_ok": {
-				console.log("SOUND OK")
+				writeLog(content, sender);
 			}
 			break;
 			default:

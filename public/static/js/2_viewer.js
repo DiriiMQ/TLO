@@ -7,6 +7,8 @@ var ans=[];
 var corner=[[1,2,5],[3,4,8],[9,13,14],[12,15,16],[6,7,10,11]];
 var stt=["","","","",""];
 var curmatch;
+var statusSound = false;
+
 function b64EncodeUnicode(str) {
   return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
     function toSolidBytes(match, p1) {
@@ -65,10 +67,13 @@ function send_mess(sender,receiver,content){
 };
 
 const checksound = () => {
-	var ok = 0;
-	Object.keys(sfx).map(s => ok = ok && (sfx[s].readyState === 4))
+	var ok = 1;
+	// console.log('check')
+	Object.keys(sfx).map(s => {ok = ok && (sfx[s].readyState === 4); console.log(s, sfx[s].readyState)})
 	if(ok){
 		send_mess("viewer", "controller", "sound_ok")
+		console.log('Check sound ok')
+		statusSound = true;
 	}
 	else{
 		setTimeout(() => {checksound()}, 2000)
@@ -321,7 +326,7 @@ socket.on("message",async (msg) => {
 	let content=msg[0].content;
 	let receiver=msg[0].receiver;
 	let sender=msg[0].sender;
-	console.log(content);
+	// console.log(content);
 	if(receiver=="viewer"){
 		switch(content){
 			case "CNV":{
@@ -367,13 +372,15 @@ socket.on("message",async (msg) => {
 				showimg(curques);
 				sfx['showimg'].pause()
 				sfx['showimg'].currentTime = 0
- 				sfx['showimg'].play().catch(err => {})
+				sfx['showimg'].play().catch(err => {})
 			};
 			break;
 			case "test":{
 				send_mess("viewer","controller","ok");
 				if(questions.length == 0) send_mess("viewer", "controller", "failed_loadques");
 				else send_mess("viewer", "controller", "loaded_ques");
+				if(statusSound) send_mess("viewer", "controller", "sound_ok");
+				else send_mess("viewer", "controller", "loading_sound");
 			};
 			break;
 			case "status":{

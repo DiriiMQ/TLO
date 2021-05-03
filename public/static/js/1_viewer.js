@@ -6,6 +6,7 @@ var questions=[];
 var socket = io.connect("http://"+document.domain+":"+location.port);
 var idq=-1;
 var ids=0;
+var statusSound = false;
 
 socket.on("disconnect",function(){
 	socket.connect();
@@ -29,13 +30,14 @@ function b64DecodeUnicode(str) {
 }
 
 
-var sfx = {	'correct': new Audio('/static/audio/KD_right.wav'),
-			'wrong': new Audio('/static/audio/KD_sai.wav'),
-			'done': new Audio('/static/audio/KD_VD_sau_phần_thi.wav'),
-			'start': new Audio('/static/audio/KD_bắt_đầu.wav'),
-			'open': new Audio('/static/audio/KD_start.wav'),
-			'60s': new Audio('/static/audio/KD_60s.wav')
-		}
+var sfx = {	
+	'correct': new Audio('/static/audio/KD_right.wav'),
+	'wrong': new Audio('/static/audio/KD_sai.wav'),
+	'done': new Audio('/static/audio/KD_VD_sau_phần_thi.wav'),
+	'start': new Audio('/static/audio/KD_bắt_đầu.wav'),
+	'open': new Audio('/static/audio/KD_start.wav'),
+	'60s': new Audio('/static/audio/KD_60s.wav')
+}
 
 const nextques=function(){
 	//disabled(nextques);
@@ -66,11 +68,11 @@ const nextques=function(){
 
 const checksound = () => {
 	var ok = 1;
-	console.log('check')
-	Object.keys(sfx).map(s => {ok = ok && (sfx[s].readyState === 4); console.log(s, sfx[s].readyState)})
+	Object.keys(sfx).map(s => {ok = ok && (sfx[s].readyState === 4);})
 	if(ok){
 		send_mess("viewer", "controller", "sound_ok")
-		console.log('ok')
+		console.log('Check sound ok')
+		statusSound = true;
 	}
 	else{
 		setTimeout(() => {checksound()}, 2000)
@@ -117,7 +119,9 @@ const start=function() {
 		$('#timer_slider').animate({width:'900px'},60000,"linear",function(){
 			setTimeout(function(){
 				// sfx['done'].pause();
-				sfx['done'].currentTime = 0
+				sfx['60s'].pause();
+				sfx['60s'].currentTime = 0;
+				sfx['done'].currentTime = 0;
 				sfx['done'].play()
 				.catch(err => {});
 			},2000);
@@ -262,6 +266,8 @@ socket.on("message",(msg) => {
 				send_mess("viewer","controller","ok");
 				if(questions.length == 0) send_mess("viewer", "controller", "failed_loadques");
 				else send_mess("viewer", "controller", "loaded_ques");
+				if(statusSound) send_mess("viewer", "controller", "sound_ok");
+				else send_mess("viewer", "controller", "loading_sound");
 			};
 			break;
 			default:
