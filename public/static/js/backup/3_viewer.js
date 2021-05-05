@@ -15,16 +15,16 @@ var statusSound = false;
 const wait = time => new Promise(resolve => setTimeout(resolve, time))
 
 function b64EncodeUnicode(str) {
-	return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
-		function toSolidBytes(match, p1) {
-		return String.fromCharCode('0x' + p1);
-	}));
+  return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+    function toSolidBytes(match, p1) {
+      return String.fromCharCode('0x' + p1);
+  }));
 }
 
 function b64DecodeUnicode(str) {
-	return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
-		return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-	}).join(''))
+  return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
+    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+  }).join(''))
 }
 
 function disabled(obj){
@@ -52,8 +52,8 @@ socket.on("disconnect",function(){
 })
 
 function precisionRound(number, precision) {
-	var factor = Math.pow(10, precision);
-	return Math.round(number * factor) / factor;
+  var factor = Math.pow(10, precision);
+  return Math.round(number * factor) / factor;
 }
 
 var sfx = {	'correct': new Audio('/static/audio/TT_đúng.wav'),

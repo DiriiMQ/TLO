@@ -658,7 +658,6 @@ const round_three = {
 	judgearr:[false,false,false,false],
 	remain:3,
 	score:[10,20,30,40],
-	done:[false, false, false, false],
 	save_question_3: function(){
 		var data=[];
 		for(var i=0;i<4;i++){
