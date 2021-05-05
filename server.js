@@ -101,6 +101,10 @@ app.get('/apix/read_file', (req, res) => {
 	}
 })
 
+app.get('/test', (req, res) => {
+	return res.sendFile(__dirname + '/test.html')
+})
+
 app.post('/apix/read_file', (req, res) => {
 	// console.log(req.body.file)
 	var path= _path.resolve(__dirname, './public/' + req.body.file)

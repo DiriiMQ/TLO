@@ -4,16 +4,47 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     </head>
     <body>
-        <video controls autoplay name="media">
-            <source src="http://localhost:3000/static/video/CK_1_2_2.mp4" type="video/mp4">
-        </video>
+        <div style="width: 1280px;height: 720px;float: left;">
+            <div id="question">
+                <video id="vid" style="position: absolute;width: 1280px;height: 720px;margin-left:10px;margin-bottom: 0px;float: left;" src=""></video>
+                <!-- <img id="img" style="position: absolute;width: 1280px;height: 720px;margin-left: 10px;margin-bottom: 0px;float: left;display: none;" src=""> -->
+            </div>
+        </div>
     </body>
     <script>
-        setTimeout(() => {
-            $('video').on('ended', () => {
-                console.log('ok');
-            })
-        }, 40000);
-        console.log($('video')[0].ended)
+        // $("question").hide();
+        console.log(new Date())
+        var video = document.getElementById("vid")
+        var url = "/static/video/CK_2.mp4"
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", url, true);
+        xhr.responseType = "arraybuffer";
+
+        xhr.onload = function(oEvent) {
+            var blob = new Blob([oEvent.target.response], {type: "video/mp4"});
+            video.src = URL.createObjectURL(blob);
+            //video.play()  if you want it to play on load
+            console.log(new Date())
+            alert('canplay');
+        };
+
+        xhr.onprogress = function(oEvent) {
+            if (oEvent.lengthComputable) {
+                var percentComplete = oEvent.loaded/oEvent.total;
+                // do something with this
+                console.log(Math.round(percentComplete * 10000)/100.0);
+            }
+        }
+        xhr.send();
+        // var url = "/static/video/CK_2.mp4";
+        // var myVid = document.getElementById("vid");
+        // var r = new XMLHttpRequest();
+        // r.onload = () => {
+        //     myVid.src = URL.createObjectURL(r.response);
+        //     alert('can play');
+        // }
+        // r.open("GET", url);
+        // r.responseType = "blob";
+        // r.send();
     </script>
 </html>
