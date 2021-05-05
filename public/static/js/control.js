@@ -1171,7 +1171,9 @@ socket.on("message",function(msg){
 			default:
 				if(content.startsWith("checkvid")){
 					content = content.replace("checkvid", "");
-					
+					if(!round_three.done[parseInt(content)]){
+						send_mess("controller", sender, "loadvid" + content);
+					}
 				}
 				if (content.startsWith("fu"))
 				{

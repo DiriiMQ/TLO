@@ -28,13 +28,13 @@
             alert('canplay');
         };
 
-        xhr.onprogress = function(oEvent) {
-            if (oEvent.lengthComputable) {
-                var percentComplete = oEvent.loaded/oEvent.total;
-                // do something with this
-                console.log(Math.round(percentComplete * 10000)/100.0);
-            }
-        }
+        // xhr.onprogress = function(oEvent) {
+        //     if (oEvent.lengthComputable) {
+        //         var percentComplete = oEvent.loaded/oEvent.total;
+        //         // do something with this
+        //         console.log(Math.round(percentComplete * 10000)/100.0);
+        //     }
+        // }
         xhr.send();
         // var url = "/static/video/CK_2.mp4";
         // var myVid = document.getElementById("vid");

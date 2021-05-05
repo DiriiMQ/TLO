@@ -108,6 +108,10 @@ function updateData(){
 	}
 }
 
+function loadvid(idvid){
+	
+}
+
 function nextques(){
 	if(questions.length == 0){
 		send_mess("viewer", "controller", "failed_loadques");
@@ -305,6 +309,10 @@ socket.on("message",async function(msg){
 			};
 			break;
 			default:
+				if(content.startsWith("loadvid")){
+					content = content.replace("loadvid", "");
+					loadvid(parseInt(content));
+				}
 				if (content.startsWith("match")) curmatch = content.replace("match","");
 		}
 	}
