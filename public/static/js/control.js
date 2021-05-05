@@ -736,6 +736,7 @@ const round_three = {
 		}
 	},
 	start: function(){
+		round_three.done[curques] = true;
 		send_mess("controller","contestants","start");
 		send_mess("controller","viewer","start");
 		tick(30,$("#timer_3"));
