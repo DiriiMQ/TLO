@@ -1,5 +1,3 @@
-
-
 var socket = io.connect("http://"+document.domain+":"+location.port);
 var contestants=[], questions = [], curques = -1, outoftime = 1, boku, fcku = 0;
 var corner=[[1,2,5],[3,4,8],[9,13,14],[12,15,16],[6,7,10,11]];
@@ -176,35 +174,42 @@ const status = async () => {
 }
 
 function update(){
-	resetimg();
-	send_mess(boku, "controller", "checkCNV");
-	for(var i=1;i<=4;i++){
-		document.getElementById("name"+i).style.background="white";
-	}
-	if (curmatch!= void 0) {
-		_fetch("/apix/read_file",{file:`static/data/${curmatch}_contestants.txt`}).then((res) => {
-			res = b64DecodeUnicode(res);
-			contestants = JSON.parse(res);
-			for(index in contestants){
-				$("#name"+parseInt(parseInt(index)+1)).html(contestants[index].name);
-				$("#score"+parseInt(parseInt(index)+1)).html(contestants[index].score);
-			}
-		});
-		loadans()
-		loadques()
-		_fetch("/apix/read_file",{file:`static/data/${curmatch}_status.txt`}).then((res) => {
-			res = b64DecodeUnicode(res);
-			res = JSON.parse(res);
-			curques=res[0].curques;
-			send_mess(boku, "controller", "confirmed");
-			$('#timer_slider').animate({width:'0px'},0);
-			$('#timer_slider').animate({opacity:'1'},0);
-			$("#question").html("Câu hỏi thứ "+parseInt(parseInt(curques)+1));
-			_fetch("/apix/read_file",{file:`static/data/${curmatch}_2_question.txt`}).then((res) => {
+	if(curmatch == undefined){
+		send_mess(boku, "controller", "get_curmatch");
+		setTimeout(() => {
+			update();
+		}, 2000);
+	} else{
+		resetimg();
+		send_mess(boku, "controller", "checkCNV");
+		for(var i=1;i<=4;i++){
+			document.getElementById("name"+i).style.background="white";
+		}
+		if (curmatch!= void 0) {
+			_fetch("/apix/read_file",{file:`static/data/${curmatch}_contestants.txt`}).then((res) => {
 				res = b64DecodeUnicode(res);
-				questions = JSON.parse(res);
+				contestants = JSON.parse(res);
+				for(index in contestants){
+					$("#name"+parseInt(parseInt(index)+1)).html(contestants[index].name);
+					$("#score"+parseInt(parseInt(index)+1)).html(contestants[index].score);
+				}
 			});
-		});
+			loadans()
+			loadques()
+			_fetch("/apix/read_file",{file:`static/data/${curmatch}_status.txt`}).then((res) => {
+				res = b64DecodeUnicode(res);
+				res = JSON.parse(res);
+				curques=res[0].curques;
+				send_mess(boku, "controller", "confirmed");
+				$('#timer_slider').animate({width:'0px'},0);
+				$('#timer_slider').animate({opacity:'1'},0);
+				$("#question").html("Câu hỏi thứ "+parseInt(parseInt(curques)+1));
+				_fetch("/apix/read_file",{file:`static/data/${curmatch}_2_question.txt`}).then((res) => {
+					res = b64DecodeUnicode(res);
+					questions = JSON.parse(res);
+				});
+			});
+		}
 	}
 }
 

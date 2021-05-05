@@ -140,52 +140,59 @@ function resetimg(){
 }
 
 const update = async () => {
-	resetimg();
-	for(var i=1;i<=4;i++){
-		document.getElementById("name"+i).style.background="#9900cc";
-		document.getElementById("nameans"+i).style.background="white";
-		document.getElementById("nameans"+i).style.color="black";
+	if(curmatch == undefined){
+		send_mess("viewer", "controller", "get_curmatch");
+		setTimeout(() => {
+			update();
+		}, 2000);
+	} else{
+		resetimg();
+		for(var i=1;i<=4;i++){
+			document.getElementById("name"+i).style.background="#9900cc";
+			document.getElementById("nameans"+i).style.background="white";
+			document.getElementById("nameans"+i).style.color="black";
+		}
+		// alert("ahihi");
+		if (curmatch!= void 0) {
+			$("#cnvimg")[0].src=`/static/images/${curmatch}_CNV.jpg`;
+			await _fetch("/apix/read_file",{file:`static/data/${curmatch}_contestants.txt`}).then((res) => {
+				res = b64DecodeUnicode(res);
+				contestants = JSON.parse(res);
+				for(index in contestants){
+					$("#name"+parseInt(parseInt(index)+1)).html(contestants[index].name);
+					$("#nameans"+parseInt(parseInt(index)+1)).html(contestants[index].name);
+					$("#score"+parseInt(parseInt(index)+1)).html(contestants[index].score);
+				}
+			});
+			// alert("ahihi");
+			await loadques()
+			// alert("ahihi");
+			await _fetch("/apix/read_file",{file:`static/data/${curmatch}_status.txt`}).then((res) => {
+				res = b64DecodeUnicode(res);
+				res = JSON.parse(res);
+				send_mess("viewer", "controller", "confirmed");
+				if(curques != res[0].curques && res[0].curques != "-1"){
+					sfx['chooseques'].pause();
+					sfx['chooseques'].currentTime = 0
+					sfx['chooseques'].play().catch(err => {});
+				}
+				curques=res[0].curques;
+				$("#question").html("Câu hỏi thứ "+parseInt(parseInt(curques)+1));
+			});
+			// alert("ahihi");
+			_fetch("/apix/read_file",{file:`static/data/${curmatch}_stt.txt`}).then((res) => {
+				res = b64DecodeUnicode(res);
+				stt = JSON.parse(res);
+			});
+		}
+		bar._opts.duration = 0;
+		bar._progressPath._opts.duration = 0;
+		bar.animate(0.0);
+		$("#timer").animate({opacity:"1"},1000);
+		bar._opts.duration = 15000;
+		bar._progressPath._opts.duration = 15000;
+		$("#timenum").html("0");
 	}
-	// alert("ahihi");
-  if (curmatch!= void 0) {
-    $("#cnvimg")[0].src=`/static/images/${curmatch}_CNV.jpg`;
-  	await _fetch("/apix/read_file",{file:`static/data/${curmatch}_contestants.txt`}).then((res) => {
-  		res = b64DecodeUnicode(res);
-  		contestants = JSON.parse(res);
-  		for(index in contestants){
-  			$("#name"+parseInt(parseInt(index)+1)).html(contestants[index].name);
-  			$("#nameans"+parseInt(parseInt(index)+1)).html(contestants[index].name);
-  			$("#score"+parseInt(parseInt(index)+1)).html(contestants[index].score);
-  		}
-  	});
-  	// alert("ahihi");
-  	await loadques()
-  	// alert("ahihi");
-  	await _fetch("/apix/read_file",{file:`static/data/${curmatch}_status.txt`}).then((res) => {
-  		res = b64DecodeUnicode(res);
-  		res = JSON.parse(res);
-		send_mess("viewer", "controller", "confirmed");
-  		if(curques != res[0].curques && res[0].curques != "-1"){
-  			sfx['chooseques'].pause();
-  			sfx['chooseques'].currentTime = 0
-  			sfx['chooseques'].play().catch(err => {});
-  		}
-  		curques=res[0].curques;
-  		$("#question").html("Câu hỏi thứ "+parseInt(parseInt(curques)+1));
-  	});
-  	// alert("ahihi");
-  	_fetch("/apix/read_file",{file:`static/data/${curmatch}_stt.txt`}).then((res) => {
-  		res = b64DecodeUnicode(res);
-  		stt = JSON.parse(res);
-  	});
-  }
-	bar._opts.duration = 0;
-	bar._progressPath._opts.duration = 0;
-	bar.animate(0.0);
-	$("#timer").animate({opacity:"1"},1000);
-	bar._opts.duration = 15000;
-	bar._progressPath._opts.duration = 15000;
-	$("#timenum").html("0");
 }
 
 const loadques = async () => {

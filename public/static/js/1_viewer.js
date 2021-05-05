@@ -146,35 +146,42 @@ async function send_mess(sender,receiver,content){
 };
 
 const update = async () => {
-	if (curmatch!= void 0) {
-		await _fetch("/apix/read_file",{file: `static/data/${curmatch}_status.txt`}).then((res) => {
-			// console.log(res)
-			res = b64DecodeUnicode(res);
-			res = JSON.parse(res);
-			send_mess("viewer", "controller", "confirmed");
-			console.log(res);
-			idq=res[0].curques;
-			ids=(res[0].curcon==-1)?(0):(res[0].curcon);
-		});
-		_fetch("/apix/read_file",{file:`static/data/${curmatch}_contestants.txt`}).then((res) => {
-			res = b64DecodeUnicode(res);
-			contestants = JSON.parse(res);
-			console.log(contestants);
-			score.html(contestants[ids].score);
-			question.html("Phần thi khởi động của " + contestants[ids].name);
-			for(index in contestants){
-				let element=$(`#contestant${parseInt(parseInt(index)+1)}`);
-				//let element    = $(`#contestant_${parseInt(index) + 1}`);
-				let contestant=contestants[index];
-				element.html(`${contestant.name} (${contestant.score})`);
-				$("#name" + parseInt(parseInt(index) + 1)).html(contestants[index].name);
-				$("#score" + parseInt(parseInt(index) + 1)).html(contestants[index].score);
-			};
-			actived(parseInt(ids)+1);
-		});
+	if(curmatch == undefined){
+		send_mess("viewer", "controller", "get_curmatch");
+		setTimeout(() => {
+			update();
+		}, 2000);
+	} else{
+		if (curmatch!= void 0) {
+			await _fetch("/apix/read_file",{file: `static/data/${curmatch}_status.txt`}).then((res) => {
+				// console.log(res)
+				res = b64DecodeUnicode(res);
+				res = JSON.parse(res);
+				send_mess("viewer", "controller", "confirmed");
+				console.log(res);
+				idq=res[0].curques;
+				ids=(res[0].curcon==-1)?(0):(res[0].curcon);
+			});
+			_fetch("/apix/read_file",{file:`static/data/${curmatch}_contestants.txt`}).then((res) => {
+				res = b64DecodeUnicode(res);
+				contestants = JSON.parse(res);
+				console.log(contestants);
+				score.html(contestants[ids].score);
+				question.html("Phần thi khởi động của " + contestants[ids].name);
+				for(index in contestants){
+					let element=$(`#contestant${parseInt(parseInt(index)+1)}`);
+					//let element    = $(`#contestant_${parseInt(index) + 1}`);
+					let contestant=contestants[index];
+					element.html(`${contestant.name} (${contestant.score})`);
+					$("#name" + parseInt(parseInt(index) + 1)).html(contestants[index].name);
+					$("#score" + parseInt(parseInt(index) + 1)).html(contestants[index].score);
+				};
+				actived(parseInt(ids)+1);
+			});
+		}
+		$('#timer_slider').animate({width:'0px'},0);
+		$('#timer_slider').animate({opacity:'1'},0);
 	}
-	$('#timer_slider').animate({width:'0px'},0);
-	$('#timer_slider').animate({opacity:'1'},0);
 }
 
 const loadq = function(){

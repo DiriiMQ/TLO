@@ -10,6 +10,7 @@ var contestants = [];
 var answer = [{ans:"", time:0.00},{ans:"", time:0.00},{ans:"", time:0.00},{ans:"", time:0.00}];
 var curques=-1;
 var socket = io.connect("http://"+document.domain+":"+location.port);
+var statusSound = false;
 
 const wait = time => new Promise(resolve => setTimeout(resolve, time))
 
@@ -63,10 +64,11 @@ var sfx = {	'correct': new Audio('/static/audio/TT_đúng.wav'),
 		}
 
 const checksound = () => {
-	var ok = 0;
+	var ok = 1;
 	Object.keys(sfx).map(s => ok = ok && (sfx[s].readyState === 4))
 	if(ok){
 		send_mess("viewer", "controller", "sound_ok")
+		statusSound = true;
 	}
 	else{
 		setTimeout(() => {checksound()}, 2000)
@@ -76,7 +78,7 @@ const checksound = () => {
 checksound()
 
 function check(){
-	if(vid.readyState == 4){
+	if(vid.readyState === 4){
 		send_mess("viewer","controller","loaded");
 		// alert("done :3")
 	}
@@ -84,6 +86,24 @@ function check(){
 		setTimeout(function() {
 			check();
 		}, 1000);
+	}
+}
+
+function updateData(){
+	if(curques < 0){
+		return;
+	}
+	if(questions[curques].type == "img"){
+		$("img").show();
+		$("vid").hide();
+		document.getElementById("img").src="/static/images/"+curmatch+"_"+parseInt(parseInt(curques)+1)+".jpg";
+		send_mess("viewer","controller","loaded");
+	}
+	else{
+		$("img").hide();
+		$("vid").show();
+		document.getElementById("vid").src="/static/video/"+curmatch+"_"+parseInt(parseInt(curques)+1)+".mp4";
+		check();
 	}
 }
 
@@ -95,17 +115,7 @@ function nextques(){
 	$("#question").hide();
 	curques++;
 	console.log(curques);
-	if(questions[curques].type == "img"){
-		$("img").show();
-		$("vid").hide();
-		document.getElementById("img").src="/static/images/"+curmatch+"_"+parseInt(parseInt(curques)+1)+".jpg";
-	}
-	else{
-		$("img").hide();
-		$("vid").show();
-		document.getElementById("vid").src="/static/video/"+curmatch+"_"+parseInt(parseInt(curques)+1)+".mp4";
-		check();
-	}
+	updateData();
 	slider.animate({height:"0px",marginTop:"720px",opacity:"1"},0);
 	for(var i = 1; i <= 4; i++)
 		$("#ts_"+i).animate({opacity:"0"},0);
@@ -145,32 +155,63 @@ const showans = () => {
 	});
 }
 
+const loadq = () => {
+	(curmatch!= void 0) && _fetch("/apix/read_file",{file:`static/data/${curmatch}_3_question.txt`}).then((res) => {
+		res=b64DecodeUnicode(res);
+		questions=JSON.parse(res);
+		if(questions.length > 0){
+			send_mess("viewer", "controller", "loaded_ques");
+		} else{
+			send_mess("viewer", "controller", "failed_loadques");
+		}
+	});
+}
+
+const loadques = () => {
+	if(curmatch == undefined){
+		send_mess("viewer", "controller", "failed_loadques");
+		send_mess("viewer", "controller", "get_curmatch");
+		setTimeout(() => {
+			console.log(curmatch);
+			update();
+		}, 2000);
+	} else loadq();
+}
+
 const update = () => {
-	for(var i = 1; i <= 4; i++){
-		document.getElementById("nameans" + i).style.background = "white";
-		document.getElementById("nameans" + i).style.color = "black";
+	if(curmatch == undefined){
+		send_mess("viewer", "controller", "get_curmatch");
+		setTimeout(() => {
+			update();
+		}, 2000);
+	} else{
+		for(var i = 1; i <= 4; i++){
+			document.getElementById("nameans" + i).style.background = "white";
+			document.getElementById("nameans" + i).style.color = "black";
+		}
+		$("#question").hide();
+		if (curmatch!= void 0) {
+			_fetch("/apix/read_file",{file:`static/data/${curmatch}_contestants.txt`}).then((res) => {
+				res = b64DecodeUnicode(res);
+				contestants = JSON.parse(res);
+				for(index in contestants){
+					$("#name"+parseInt(parseInt(index)+1)).html(contestants[index].name);
+					$("#score"+parseInt(parseInt(index)+1)).html(contestants[index].score);
+				}
+			});
+			_fetch("/apix/read_file",{file:`static/data/${curmatch}_status.txt`}).then((res) => {
+				res = b64DecodeUnicode(res);
+				res = JSON.parse(res);
+				curques=res[0].curques-1;
+				send_mess("viewer", "controller", "confirmed");;
+				_fetch("/apix/read_file",{file:`static/data/${curmatch}_3_question.txt`}).then((res) => {
+					res = b64DecodeUnicode(res);
+					questions = JSON.parse(res);
+					nextques();
+				});
+			});
+		}
 	}
-	$("#question").hide();
-  if (curmatch!= void 0) {
-  	_fetch("/apix/read_file",{file:`static/data/${curmatch}_contestants.txt`}).then((res) => {
-  		res = b64DecodeUnicode(res);
-  		contestants = JSON.parse(res);
-  		for(index in contestants){
-  			$("#name"+parseInt(parseInt(index)+1)).html(contestants[index].name);
-  			$("#score"+parseInt(parseInt(index)+1)).html(contestants[index].score);
-  		}
-  	});
-  	_fetch("/apix/read_file",{file:`static/data/${curmatch}_status.txt`}).then((res) => {
-  		res = b64DecodeUnicode(res);
-  		res = JSON.parse(res);
-  		curques=res[0].curques-1;
-  		_fetch("/apix/read_file",{file:`static/data/${curmatch}_3_question.txt`}).then((res) => {
-  			res = b64DecodeUnicode(res);
-  			questions = JSON.parse(res);
-  			nextques();
-  		});
-  	});
-  }
 }
 
 socket.on("message",async function(msg){
@@ -186,10 +227,7 @@ socket.on("message",async function(msg){
 			};
 			break;
 			case "loadques":{
-				(curmatch!= void 0) && _fetch("/apix/read_file",{file:`static/data/${curmatch}_3_question.txt`}).then((res) => {
-					res=b64DecodeUnicode(res);
-					questions=JSON.parse(res);
-				});
+				loadques();
 			};
 			break;
 			case "start":{
@@ -201,6 +239,11 @@ socket.on("message",async function(msg){
 			break;
 			case "test":{
 				send_mess("viewer","controller","ok");
+				if(questions.length == 0) send_mess("viewer", "controller", "failed_loadques");
+				else send_mess("viewer", "controller", "loaded_ques");
+				if(statusSound) send_mess("viewer", "controller", "sound_ok");
+				else send_mess("viewer", "controller", "loading_sound");
+				updateData();
 			};
 			break;
 			case "showques":{

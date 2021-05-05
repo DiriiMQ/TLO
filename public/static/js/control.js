@@ -676,16 +676,16 @@ const round_three = {
 		});
 		$("#load_ques_3_btn").click();
 	},
-	load_question:function(){
-		_fetch("/apix/read_file",{
-			file: `static/data/${curmatch}_3_question.txt`
-		}).then((callback) => {
-			console.log(callback);
-			callback=b64DecodeUnicode(callback);
-			callback=JSON.parse(callback);
-			round_three.questions=callback;
-		});
-	},
+	// load_question:function(){
+	// 	_fetch("/apix/read_file",{
+	// 		file: `static/data/${curmatch}_3_question.txt`
+	// 	}).then((callback) => {
+	// 		console.log(callback);
+	// 		callback=b64DecodeUnicode(callback);
+	// 		callback=JSON.parse(callback);
+	// 		round_three.questions=callback;
+	// 	});
+	// },
 	// load_question: function(){
 	// 	_fetch("/apix/read_file",{file:`static/data/${curmatch}_3_question.txt`}).then((callback) => {
 	// 		round_three.questions=b64DecodeUnicode(callback);
@@ -697,18 +697,19 @@ const round_three = {
 		disabled($("#false_3_btn"));
 		disabled($("#show_ans_3_btn"));
 		disabled($("#sort_ans_3_btn"));
+		disabled($("#start_3_btn"));
 		// disabled($("#next_ques_3_btn"));
-		$("#ques_3").html(round_three.questions[curques].ques+" ["+round_three.questions[curques].type+"]");
-		if(round_three.questions[curques].type == "vid"){
-			for(var i=1;i<=6;i++){
-				document.getElementById("stt_tt"+i).style.background="#ff0000";
-			}
+		if(round_three.questions.length > 0) $("#ques_3").html(round_three.questions[curques].ques+" ["+round_three.questions[curques].type+"]");
+		// if(round_three.questions[curques].type == "vid"){
+		for(var i=1;i<=6;i++){
+			document.getElementById("stt_tt"+i).style.background="#ff0000";
 		}
-		else{
-			for(var i=1;i<=6;i++){
-				document.getElementById("stt_tt"+i).style.background="#00ff00";
-			}
-		}
+		// }
+		// else{
+		// 	for(var i=1;i<=6;i++){
+		// 		document.getElementById("stt_tt"+i).style.background="#00ff00";
+		// 	}
+		// }
 		round_three.answer = [{ans:"", time:0.00},{ans:"", time:0.00},{ans:"", time:0.00},{ans:"", time:0.00}];
 	},
 	correct: function(){
@@ -738,8 +739,6 @@ const round_three = {
 		send_mess("controller","viewer","start");
 		tick(30,$("#timer_3"));
 		setTimeout(function() {
-			enabled($("#true_3_btn"));
-			enabled($("#false_3_btn"));
 			enabled($("#show_ans_3_btn"));
 			enabled($("#sort_ans_3_btn"));
 			enabled($("#next_ques_3_btn"));
@@ -763,6 +762,8 @@ const round_three = {
 		var data=JSON.stringify(round_three.answer);
 		data=b64EncodeUnicode(data);
 		console.log(data);
+		enabled($("#true_3_btn"));
+		enabled($("#false_3_btn"));
 		_fetch("/apix/update_file",{
 			file:`static/data/${curmatch}_anstt.txt`,
 			data:data
@@ -779,6 +780,15 @@ const round_three = {
 		send_mess("controller","viewer","loadques");
 	},
 	show: function(){
+		if(round_three.questions.length == 0){
+			alert("Load câu hỏi đeee");
+			return;
+		}
+		if(curques == -1 || curround != 2 || curques != $("#curques_edit").val()){
+			alert("Kiểm tra overall status đeeee");
+			return;
+		}
+		enabled($("#start_3_btn"));
 		send_mess("controller","contestants","showques");
 		send_mess("controller","viewer","showques");
 	},
@@ -1149,6 +1159,7 @@ socket.on("message",function(msg){
 						document.getElementById("stt_tt"+parseInt(parseInt(sender)+1)).style.background="#00ff00";
 					}
 				}
+				writeLog(content + '_data', sender);
 			};
 			break;
 			case "sound_ok": {

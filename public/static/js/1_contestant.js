@@ -108,31 +108,38 @@ const start = function() {
 };
 
 const update = function(){
-	(curmatch!= void 0) && _fetch("/apix/read_file",{
-		file: `static/data/${curmatch}_status.txt`
-	}).then((res) => {
-		res=b64DecodeUnicode(res);
-		res=JSON.parse(res);
-		send_mess(boku, "controller", "confirmed");
-		console.log(res);
-		idq=res[0].curques;
-		ids=(res[0].curcon==-1)?(0):(res[0].curcon);
-		_fetch("/apix/read_file",{
-			file:`static/data/${curmatch}_contestants.txt`
+	if(curmatch == undefined){
+		send_mess(boku, "controller", "get_curmatch");
+		setTimeout(() => {
+			update();
+		}, 2000);
+	} else{
+		(curmatch!= void 0) && _fetch("/apix/read_file",{
+			file: `static/data/${curmatch}_status.txt`
 		}).then((res) => {
 			res=b64DecodeUnicode(res);
-			contestants=JSON.parse(res);
-			console.log(contestants);
-			score.html(contestants[ids].score);
-			question.html("Phần thi khởi động của "+contestants[ids].name);
-			for(index in contestants){
-				let element=$(`#contestant${parseInt(parseInt(index)+1)}`);
-				let contestant=contestants[index];
-				element.html(`${contestant.name} (${contestant.score} points)`);
-			};
-			actived(parseInt(ids)+1);
+			res=JSON.parse(res);
+			send_mess(boku, "controller", "confirmed");
+			console.log(res);
+			idq=res[0].curques;
+			ids=(res[0].curcon==-1)?(0):(res[0].curcon);
+			_fetch("/apix/read_file",{
+				file:`static/data/${curmatch}_contestants.txt`
+			}).then((res) => {
+				res=b64DecodeUnicode(res);
+				contestants=JSON.parse(res);
+				console.log(contestants);
+				score.html(contestants[ids].score);
+				question.html("Phần thi khởi động của "+contestants[ids].name);
+				for(index in contestants){
+					let element=$(`#contestant${parseInt(parseInt(index)+1)}`);
+					let contestant=contestants[index];
+					element.html(`${contestant.name} (${contestant.score} points)`);
+				};
+				actived(parseInt(ids)+1);
+			});
 		});
-	});
+	}
 }
 
 const loadq = function(){
