@@ -15,10 +15,10 @@ socket.on("connect",function(){
 });
 
 function b64EncodeUnicode(str) {
-  return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
-    function toSolidBytes(match, p1) {
-      return String.fromCharCode('0x' + p1);
-  }));
+	return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+		function toSolidBytes(match, p1) {
+		return String.fromCharCode('0x' + p1);
+	}));
 }
 for (let i=1;i<5;i++)
 {
@@ -774,6 +774,7 @@ const round_three = {
 		})
 	},
 	load_question: function(){
+		console.log('Controller loadques');
 		_fetch("/apix/read_file",{file:`static/data/${curmatch}_3_question.txt`}).then((res) => {
 			res=b64DecodeUnicode(res);
 			round_three.questions=JSON.parse(res);
@@ -1169,6 +1170,14 @@ socket.on("message",function(msg){
 			}
 			break;
 			default:
+				if(content.startsWith("loading_vid")){
+					content = content.replace("loading_vid", " ");
+					writeLog("loading_vid" + content, sender);
+				}
+				if(content.startsWith("loaded_vid")){
+					content = content.replace("loaded_vid", " ");
+					writeLog("loaded_vid" + content, sender);
+				}
 				if(content.startsWith("checkvid")){
 					content = content.replace("checkvid", "");
 					if(!round_three.done[parseInt(content)]){

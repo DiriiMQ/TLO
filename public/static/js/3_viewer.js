@@ -12,6 +12,7 @@ var curques=-1;
 var socket = io.connect("http://"+document.domain+":"+location.port);
 var statusSound = false;
 var urlVid = ["", "", "", ""];
+var haveLoad = [false, false, false, false];
 
 const wait = time => new Promise(resolve => setTimeout(resolve, time))
 
@@ -78,20 +79,20 @@ const checksound = () => {
 
 checksound()
 
-function check(){
-	if(vid.readyState === 4){
-		send_mess("viewer","controller","loaded");
-		// alert("done :3")
-	}
-	else{
-		setTimeout(function() {
-			check();
-		}, 1000);
-	}
-}
+// function check(){
+// 	if(vid.readyState === 4){
+// 		send_mess("viewer","controller","loaded");
+// 		// alert("done :3")
+// 	}
+// 	else{
+// 		setTimeout(function() {
+// 			check();
+// 		}, 1000);
+// 	}
+// }
 
 function updateData(){
-	if(curques < 0){
+	if(parseInt(curques) < 0){
 		return;
 	}
 	if(questions[curques].type == "img"){
@@ -103,13 +104,30 @@ function updateData(){
 	else{
 		$("img").hide();
 		$("vid").show();
-		document.getElementById("vid").src="/static/video/"+curmatch+"_"+parseInt(parseInt(curques)+1)+".mp4";
-		check();
+		if(urlVid[parseInt(curques)].length == 0){
+			send_mess("viewer", "controller", "loading_vid" + parseInt(parseInt(curques)+1));
+			return;
+		}
+		document.getElementById("vid").src=urlVid[parseInt(curques)];
+		send_mess("viewer","controller","loaded");
 	}
 }
 
 function loadvid(idvid){
-	
+	if(haveLoad[idvid]) return;
+	haveLoad[idvid] = true;
+	console.log('load vid ' + (idvid + 1));
+	var url = `/static/video/${curmatch}_${idvid + 1}.mp4`
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", url, true);
+	xhr.responseType = "arraybuffer";
+	xhr.onload = function(oEvent) {
+		var blob = new Blob([oEvent.target.response], {type: "video/mp4"});
+		//video.play()  if you want it to play on load
+		urlVid[idvid] = URL.createObjectURL(blob);
+		send_mess("viewer", "controller", "loaded_vid" + (idvid + 1));
+	};
+	xhr.send();
 }
 
 function nextques(){
