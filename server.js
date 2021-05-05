@@ -19,8 +19,8 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 app.use((req, res, next) => {
 	res.json = (obj) => {
- 		res.setHeader('Content-Type', 'application/json')
- 		res.end(JSON.stringify(obj))
+		res.setHeader('Content-Type', 'application/json')
+		res.end(JSON.stringify(obj))
 	}
 	next()
 })
