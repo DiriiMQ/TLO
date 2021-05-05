@@ -11,6 +11,7 @@ var answer = [{ans:"", time:0.00},{ans:"", time:0.00},{ans:"", time:0.00},{ans:"
 var curques=-1;
 var socket = io.connect("http://"+document.domain+":"+location.port);
 var statusSound = false;
+var urlVid = ["", "", "", ""];
 
 const wait = time => new Promise(resolve => setTimeout(resolve, time))
 
@@ -108,6 +109,10 @@ function updateData(){
 }
 
 function nextques(){
+	if(questions.length == 0){
+		send_mess("viewer", "controller", "failed_loadques");
+		return;
+	}
 	for(var i = 1; i <= 4; i++){
 		document.getElementById("nameans" + i).style.background = "white";
 		document.getElementById("nameans" + i).style.color = "black";
@@ -161,6 +166,9 @@ const loadq = () => {
 		questions=JSON.parse(res);
 		if(questions.length > 0){
 			send_mess("viewer", "controller", "loaded_ques");
+			for(var i = 0; i < 4; i++){
+				if(questions[i].type == "vid") send_mess("viewer", "controller", "checkvid" + i);
+			}
 		} else{
 			send_mess("viewer", "controller", "failed_loadques");
 		}
@@ -203,12 +211,8 @@ const update = () => {
 				res = b64DecodeUnicode(res);
 				res = JSON.parse(res);
 				curques=res[0].curques-1;
-				send_mess("viewer", "controller", "confirmed");;
-				_fetch("/apix/read_file",{file:`static/data/${curmatch}_3_question.txt`}).then((res) => {
-					res = b64DecodeUnicode(res);
-					questions = JSON.parse(res);
-					nextques();
-				});
+				send_mess("viewer", "controller", "confirmed");
+				nextques();
 			});
 		}
 	}
@@ -294,14 +298,14 @@ socket.on("message",async function(msg){
 
 			}
 			break;
-      case "quit":{
-        window.open(location.href.replace(/\/\d($|\/)/, function(v) {
-          return "/"+(Number(v[1])+1).toString();
-        }),"_self");
-      };
-      break;
-      default:
-        if (content.startsWith("match")) curmatch = content.replace("match","");
+			case "quit":{
+				window.open(location.href.replace(/\/\d($|\/)/, function(v) {
+				return "/"+(Number(v[1])+1).toString();
+				}),"_self");
+			};
+			break;
+			default:
+				if (content.startsWith("match")) curmatch = content.replace("match","");
 		}
 	}
 });

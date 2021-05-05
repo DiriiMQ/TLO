@@ -1169,6 +1169,10 @@ socket.on("message",function(msg){
 			}
 			break;
 			default:
+				if(content.startsWith("checkvid")){
+					content = content.replace("checkvid", "");
+					
+				}
 				if (content.startsWith("fu"))
 				{
 					if(curround == 3){
