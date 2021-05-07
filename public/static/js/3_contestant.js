@@ -10,16 +10,16 @@ var socket = io.connect("http://"+document.domain+":"+location.port);
 var boku, outofTime = 1;
 var curmatch;
 function b64EncodeUnicode(str) {
-  return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
-    function toSolidBytes(match, p1) {
-      return String.fromCharCode('0x' + p1);
-  }));
+	return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+		function toSolidBytes(match, p1) {
+		return String.fromCharCode('0x' + p1);
+	}));
 }
 
 function b64DecodeUnicode(str) {
-  return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
-    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-  }).join(''))
+	return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
+		return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+	}).join(''))
 }
 
 function disabled(obj){
@@ -82,23 +82,47 @@ function nextques(){
 
 function update(){
 	$("#question").hide();
+	if(curmatch == undefined){
+		send_mess("viewer", "controller", "get_curmatch");
+		setTimeout(() => {
+			update();
+		}, 2000);
+		return;
+	}
 	(curmatch!= void 0) && _fetch("/apix/read_file",{file:`static/data/${curmatch}_status.txt`}).then((res) => {
 		res = b64DecodeUnicode(res);
 		res = JSON.parse(res);
 		curques=res[0].curques-1;
-		_fetch("/apix/read_file",{file:`static/data/${curmatch}_3_question.txt`}).then((res) => {
-			res = b64DecodeUnicode(res);
-			questions = JSON.parse(res);
-			nextques();
-		});
+		send_mess("viewer", "controller", "confirmed");
+		if(questions.length == 0) send_mess(boku, "controller", "failed_loadques");
+		else nextques();	
 	});
 }
 
-function loadques(){
+const loadq = () => {
 	(curmatch!= void 0) && _fetch("/apix/read_file",{file:`static/data/${curmatch}_3_question.txt`}).then((res) => {
-		res = b64DecodeUnicode(res);
-		questions = JSON.parse(res);
+		res=b64DecodeUnicode(res);
+		questions=JSON.parse(res);
+		if(questions.length > 0){
+			send_mess(boku, "controller", "loaded_ques");
+			for(var i = 0; i < 4; i++){
+				if(questions[i].type == "vid") send_mess(boku, "controller", "checkvid" + i);
+			}
+		} else{
+			send_mess(boku, "controller", "failed_loadques");
+		}
 	});
+}
+
+const loadques = () => {
+	if(curmatch == undefined){
+		send_mess(boku, "controller", "failed_loadques");
+		send_mess(boku, "controller", "get_curmatch");
+		setTimeout(() => {
+			console.log(curmatch);
+			update();
+		}, 2000);
+	} else loadq();
 }
 
 socket.on("message",function(msg){
@@ -127,20 +151,22 @@ socket.on("message",function(msg){
 			break;
 			case "test":{
 				send_mess(boku,"controller","ok");
+				if(questions.length == 0) send_mess("viewer", "controller", "failed_loadques");
+				else send_mess("viewer", "controller", "loaded_ques");
 			};
 			break;
 			case "showques":{
 				$("#question").show();
 			};
-      break;
-      case "quit":{
-        window.open(location.href.replace(/\/\d\//, function(v) {
-          return "/"+(Number(v[1])+1).toString()+"/";
-        }),"_self");
-      };
-      break;
-      default:
-        if (content.startsWith("match")) curmatch = content.replace("match","");
+			break;
+			case "quit":{
+				window.open(location.href.replace(/\/\d\//, function(v) {
+				return "/"+(Number(v[1])+1).toString()+"/";
+				}),"_self");
+			};
+			break;
+			default:
+				if (content.startsWith("match")) curmatch = content.replace("match","");
 		}
 	}
 });
