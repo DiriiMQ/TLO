@@ -171,6 +171,9 @@ const update = async () => {
 				res = b64DecodeUnicode(res);
 				res = JSON.parse(res);
 				send_mess("viewer", "controller", "confirmed");
+				if(res[0].curround != "1"){
+					return;
+				}
 				if(curques != res[0].curques && res[0].curques != "-1"){
 					sfx['chooseques'].pause();
 					sfx['chooseques'].currentTime = 0
