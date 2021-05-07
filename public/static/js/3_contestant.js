@@ -104,12 +104,12 @@ function loadvid(idvid){
 }
 
 function nextques(){
+	curques++;
 	if(questions.length == 0){
 		send_mess(boku, "controller", "failed_loadques");
 		return;
 	}
 	$("#question").hide();
-	curques++;
 	console.log(curques);
 	updateData();
 	slider.animate({height:"0px",marginTop:"720px",opacity:"1"},0);
@@ -127,10 +127,10 @@ function update(){
 	(curmatch!= void 0) && _fetch("/apix/read_file",{file:`static/data/${curmatch}_status.txt`}).then((res) => {
 		res = b64DecodeUnicode(res);
 		res = JSON.parse(res);
+		// console.log(res);
 		curques=res[0].curques-1;
 		send_mess(boku, "controller", "confirmed");
-		if(questions.length == 0) send_mess(boku, "controller", "failed_loadques");
-		else nextques();	
+		nextques();	
 	});
 }
 
@@ -166,7 +166,7 @@ socket.on("message",function(msg){
 	let content=msg[0].content;
 	let sender=msg[0].sender;
 	let receiver=msg[0].receiver;
-	if(receiver == "contestants"){
+	if(receiver == "contestants" || receiver == boku){
 		switch(content){
 			case "update":{
 				update()

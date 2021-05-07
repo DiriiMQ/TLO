@@ -131,6 +131,7 @@ function loadvid(idvid){
 }
 
 function nextques(){
+	curques++;
 	if(questions.length == 0){
 		send_mess("viewer", "controller", "failed_loadques");
 		return;
@@ -140,7 +141,6 @@ function nextques(){
 		document.getElementById("nameans" + i).style.color = "black";
 	}
 	$("#question").hide();
-	curques++;
 	console.log(curques);
 	updateData();
 	slider.animate({height:"0px",marginTop:"720px",opacity:"1"},0);
