@@ -421,6 +421,6 @@ socket.on("message",async (msg) => {
 	}
 })
 
-$(document).ready(() => {
-	update()
-})
+// $(document).ready(() => {
+// 	update()
+// })
