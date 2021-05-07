@@ -3,6 +3,8 @@ const surelb=$("#surelb");
 const slider=$("#timer_slider");
 var starttime=0;
 var time=0;
+var urlVid = ["", "", "", ""];
+var haveLoad = [false, false, false, false];
 
 var questions = [];
 var curques=-1;
@@ -51,39 +53,72 @@ function precisionRound(number, precision) {
   return Math.round(number * factor) / factor;
 }
 
-function check(){
-	if(document.getElementById("vid").readyState == 4){
+// function check(){
+// 	if(document.getElementById("vid").readyState == 4){
+// 		send_mess(boku,"controller","loaded");
+// 	}
+// 	else{
+// 		setTimeout(function() {
+// 			check();
+// 		}, 1000);
+// 	}
+// }
+
+function updateData(){
+	if(parseInt(curques) < 0){
+		return;
+	}
+	if(questions[curques].type == "img"){
+		$("img").show();
+		$("vid").hide();
+		document.getElementById("img").src="/static/images/"+curmatch+"_"+parseInt(parseInt(curques)+1)+".jpg";
 		send_mess(boku,"controller","loaded");
 	}
 	else{
-		setTimeout(function() {
-			check();
-		}, 1000);
+		$("img").hide();
+		$("vid").show();
+		if(urlVid[parseInt(curques)].length == 0){
+			send_mess(boku, "controller", "loading_vid" + parseInt(parseInt(curques)+1));
+			return;
+		}
+		document.getElementById("vid").src=urlVid[parseInt(curques)];
+		send_mess(boku,"controller","loaded");
 	}
 }
 
+function loadvid(idvid){
+	if(haveLoad[idvid]) return;
+	haveLoad[idvid] = true;
+	console.log('load vid ' + (idvid + 1));
+	var url = `/static/video/${curmatch}_${idvid + 1}.mp4`
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", url, true);
+	xhr.responseType = "arraybuffer";
+	xhr.onload = function(oEvent) {
+		var blob = new Blob([oEvent.target.response], {type: "video/mp4"});
+		//video.play()  if you want it to play on load
+		urlVid[idvid] = URL.createObjectURL(blob);
+		send_mess(boku, "controller", "loaded_vid" + (idvid + 1));
+	};
+	xhr.send();
+}
+
 function nextques(){
+	if(questions.length == 0){
+		send_mess(boku, "controller", "failed_loadques");
+		return;
+	}
 	$("#question").hide();
 	curques++;
 	console.log(curques);
-	if(questions[curques].type == "img"){
-		$("#img").show();
-		$("#vid").hide();
-		document.getElementById("img").src="/static/images/"+curmatch+"_"+parseInt(parseInt(curques)+1)+".jpg";
-	}
-	else{
-		$("#img").hide();
-		$("#vid").show();
-		document.getElementById("vid").src="/static/video/"+curmatch+"_"+parseInt(parseInt(curques)+1)+".mp4";
-		check();
-	}
+	updateData();
 	slider.animate({height:"0px",marginTop:"720px",opacity:"1"},0);
 }
 
 function update(){
 	$("#question").hide();
 	if(curmatch == undefined){
-		send_mess("viewer", "controller", "get_curmatch");
+		send_mess(boku, "controller", "get_curmatch");
 		setTimeout(() => {
 			update();
 		}, 2000);
@@ -93,7 +128,7 @@ function update(){
 		res = b64DecodeUnicode(res);
 		res = JSON.parse(res);
 		curques=res[0].curques-1;
-		send_mess("viewer", "controller", "confirmed");
+		send_mess(boku, "controller", "confirmed");
 		if(questions.length == 0) send_mess(boku, "controller", "failed_loadques");
 		else nextques();	
 	});
@@ -151,8 +186,9 @@ socket.on("message",function(msg){
 			break;
 			case "test":{
 				send_mess(boku,"controller","ok");
-				if(questions.length == 0) send_mess("viewer", "controller", "failed_loadques");
-				else send_mess("viewer", "controller", "loaded_ques");
+				if(questions.length == 0) send_mess(boku, "controller", "failed_loadques");
+				else send_mess(boku, "controller", "loaded_ques");
+				updateData();
 			};
 			break;
 			case "showques":{
@@ -166,6 +202,10 @@ socket.on("message",function(msg){
 			};
 			break;
 			default:
+				if(content.startsWith("loadvid")){
+					content = content.replace("loadvid", "");
+					loadvid(parseInt(content));
+				}
 				if (content.startsWith("match")) curmatch = content.replace("match","");
 		}
 	}
