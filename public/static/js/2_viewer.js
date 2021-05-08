@@ -10,10 +10,10 @@ var curmatch;
 var statusSound = false;
 
 function b64EncodeUnicode(str) {
-  return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
-    function toSolidBytes(match, p1) {
-      return String.fromCharCode('0x' + p1);
-  }));
+	return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+		function toSolidBytes(match, p1) {
+		return String.fromCharCode('0x' + p1);
+	}));
 }
 
 send_mess("viewer","controller","ok");
@@ -25,9 +25,9 @@ if(window.outerWidth < 1200){
 }
 
 function b64DecodeUnicode(str) {
-  return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
-    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-  }).join(''))
+	return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
+		return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+	}).join(''))
 }
 
 socket.on("disconnect",function(){
@@ -35,24 +35,25 @@ socket.on("disconnect",function(){
 })
 
 var bar = new ProgressBar.Circle(timer, {
-  id: "bar",
-  strokeWidth: 6,
-  easing: 'linear',
-  duration: 15000,
-  color: '#3333ff',
-  trailColor: '#eee',
-  trailWidth: 1,
-  svgStyle: null
+	id: "bar",
+	strokeWidth: 6,
+	easing: 'linear',
+	duration: 15000,
+	color: '#3333ff',
+	trailColor: '#eee',
+	trailWidth: 1,
+	svgStyle: null
 });
 
-var sfx = {	'cnv': new Audio('/static/audio/VCNV_trả_lời.wav'),
-			'correct': new Audio('/static/audio/VCNV_tl_đúng.wav'),
-			'showans': new Audio('/static/audio/VCNV_mở_đáp_án.wav'),
-			'showimg': new Audio('/static/audio/VCNV_mở_hình_ảnh.wav'),
-			'chooseques': new Audio('/static/audio/VCNV_chọn_ô_chữ.wav'),
-			'wrong': new Audio('/static/audio/KD_sai.wav'),
-			'15s': new Audio('/static/audio/VCNV_15s.wav')
-		}
+var sfx = {	
+	'cnv': new Audio('/static/audio/VCNV_trả_lời.wav'),
+	'correct': new Audio('/static/audio/VCNV_tl_đúng.wav'),
+	'showans': new Audio('/static/audio/VCNV_mở_đáp_án.wav'),
+	'showimg': new Audio('/static/audio/VCNV_mở_hình_ảnh.wav'),
+	'chooseques': new Audio('/static/audio/VCNV_chọn_ô_chữ.wav'),
+	'wrong': new Audio('/static/audio/KD_sai.wav'),
+	'15s': new Audio('/static/audio/VCNV_15s.wav')
+}
 
 function send_mess(sender,receiver,content){
 		var data=[];
@@ -170,10 +171,10 @@ const update = async () => {
 			await _fetch("/apix/read_file",{file:`static/data/${curmatch}_status.txt`}).then((res) => {
 				res = b64DecodeUnicode(res);
 				res = JSON.parse(res);
-				send_mess("viewer", "controller", "confirmed");
 				if(res[0].curround != "1"){
 					return;
 				}
+				send_mess("viewer", "controller", "confirmed");
 				if(curques != res[0].curques && res[0].curques != "-1"){
 					sfx['chooseques'].pause();
 					sfx['chooseques'].currentTime = 0
@@ -401,11 +402,11 @@ socket.on("message",async (msg) => {
 				$("#question").html(questions[curques]);
 			}
 			break;
-      case "end":
-        window.open(location.href.replace(/\/\d($|\/)/, function(v) {
-          return "/"+(Number(v[1])+1).toString();
-        }),"_self");
-        break;
+			case "end":
+				window.open(location.href.replace(/\/\d($|\/)/, function(v) {
+					return "/"+(Number(v[1])+1).toString();
+				}),"_self");
+			break;
 			case 'wrongCNV':{
 				sfx['wrong'].pause()
 				sfx['wrong'].currentTime = 0
@@ -415,8 +416,8 @@ socket.on("message",async (msg) => {
 			break;
 			case 'full': full()
 			break;
-      default:
-        if (content.startsWith("match")) curmatch = content.replace("match","");
+			default:
+				if (content.startsWith("match")) curmatch = content.replace("match","");
 		}
 	}
 })
