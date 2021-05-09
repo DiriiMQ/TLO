@@ -500,6 +500,7 @@ const round_two = {
 	load_question: function(){
 		// $("#curques_edit").val("-1");
 		// save_status();
+		round_two.save_status()
 		_fetch("/apix/read_file", {file: `static/data/${curmatch}_2_question.txt`}).then((callback) => {
 			round_two.questions=b64DecodeUnicode(callback);
 			round_two.questions=JSON.parse(round_two.questions);

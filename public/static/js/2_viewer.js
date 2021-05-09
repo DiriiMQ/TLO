@@ -16,8 +16,6 @@ function b64EncodeUnicode(str) {
 	}));
 }
 
-send_mess("viewer","controller","ok");
-
 if(window.outerWidth < 1200){
 	document.getElementById("timetab").style.position = 'absolute'
 	document.getElementById("timetab").style.top = '300px'
@@ -45,15 +43,66 @@ var bar = new ProgressBar.Circle(timer, {
 	svgStyle: null
 });
 
+var loadedAu = [false, false, false, false, false, false, false];
+var sourceAu = [
+	'/static/audio/VCNV_trả_lời.wav',
+	'/static/audio/VCNV_tl_đúng.wav',
+	'/static/audio/VCNV_mở_đáp_án.wav',
+	'/static/audio/VCNV_mở_hình_ảnh.wav',
+	'/static/audio/VCNV_chọn_ô_chữ.wav',
+	'/static/audio/KD_sai.wav',
+	'/static/audio/VCNV_15s.wav'
+]
+var indexAu = [
+	'cnv',
+	'correct',
+	'showans',
+	'showimg',
+	'chooseques',
+	'wrong',
+	'15s'
+]
+
 var sfx = {	
-	'cnv': new Audio('/static/audio/VCNV_trả_lời.wav'),
-	'correct': new Audio('/static/audio/VCNV_tl_đúng.wav'),
-	'showans': new Audio('/static/audio/VCNV_mở_đáp_án.wav'),
-	'showimg': new Audio('/static/audio/VCNV_mở_hình_ảnh.wav'),
-	'chooseques': new Audio('/static/audio/VCNV_chọn_ô_chữ.wav'),
-	'wrong': new Audio('/static/audio/KD_sai.wav'),
-	'15s': new Audio('/static/audio/VCNV_15s.wav')
+	'cnv': new Audio,
+	'correct': new Audio,
+	'showans': new Audio,
+	'showimg': new Audio,
+	'chooseques': new Audio,
+	'wrong': new Audio,
+	'15s': new Audio
 }
+
+function loadau(idaudio){
+	var url = sourceAu[idaudio];
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", url, true);
+	xhr.responseType = "arraybuffer";
+	xhr.onload = function(oEvent) {
+		var blob = new Blob([oEvent.target.response], {type: "audio/wav"});
+		console.log('loaded ' + indexAu[idaudio]);
+		sfx[indexAu[idaudio]].src = URL.createObjectURL(blob);
+		loadedAu[idaudio] = true;
+	};
+	xhr.send();
+}
+
+const checksound = () => {
+	for(var i = 0; i < 7; i++){
+		if(!loadedAu[i]){
+			setTimeout(() => {
+				checksound();
+			}, 2000);
+			return;
+		}
+	}
+	send_mess("viewer", "controller", "sound_ok")
+	console.log('Check sound ok')
+	statusSound = true;
+}
+
+for(var i = 0; i < 7; i++) loadau(i);
+checksound();
 
 function send_mess(sender,receiver,content){
 		var data=[];
@@ -66,22 +115,6 @@ function send_mess(sender,receiver,content){
 		data=b64EncodeUnicode(data);
 		socket.send(data);
 };
-
-const checksound = () => {
-	var ok = 1;
-	// console.log('check')
-	Object.keys(sfx).map(s => {ok = ok && (sfx[s].readyState === 4); console.log(s, sfx[s].readyState)})
-	if(ok){
-		send_mess("viewer", "controller", "sound_ok")
-		console.log('Check sound ok')
-		statusSound = true;
-	}
-	else{
-		setTimeout(() => {checksound()}, 2000)
-	}
-}
-
-checksound()
 
 function appendhn(){
 	$("#hn1").html('');$("#hn2").html('');$("#hn3").html('');$("#hn0").html('');
@@ -166,9 +199,7 @@ const update = async () => {
 				}
 			});
 			// alert("ahihi");
-			await loadques()
-			// alert("ahihi");
-			await _fetch("/apix/read_file",{file:`static/data/${curmatch}_status.txt`}).then((res) => {
+			_fetch("/apix/read_file",{file:`static/data/${curmatch}_status.txt`}).then((res) => {
 				res = b64DecodeUnicode(res);
 				res = JSON.parse(res);
 				if(res[0].curround != "1"){
@@ -214,6 +245,11 @@ const loadques = async () => {
 		_fetch("/apix/read_file",{file:`static/data/${curmatch}_2_question.txt`}).then((res) => {
 			res = b64DecodeUnicode(res);
 			questions = JSON.parse(res);
+			if(questions.length > 0){
+				send_mess("viewer", "controller", "loaded_ques");
+			} else{
+				send_mess("viewer", "controller", "failed_loadques");
+			}
 		});
 		_fetch("/apix/read_file",{file:`static/data/${curmatch}_ans.txt`}).then((res) => {
 			res = b64DecodeUnicode(res);
@@ -223,11 +259,6 @@ const loadques = async () => {
 			}
 			appendhn();
 		});
-		if(questions.length > 0){
-			send_mess("viewer", "controller", "loaded_ques");
-		} else{
-			send_mess("viewer", "controller", "failed_loadques");
-		}
 		// alert(ans)
 		await _fetch("/apix/read_file",{file:`static/data/${curmatch}_stt.txt`}).then((res) => {
 			res = b64DecodeUnicode(res);

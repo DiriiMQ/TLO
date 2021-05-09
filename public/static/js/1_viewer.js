@@ -7,6 +7,23 @@ var socket = io.connect("http://"+document.domain+":"+location.port);
 var idq=-1;
 var ids=0;
 var statusSound = false;
+var loadedAu = [false, false, false, false, false, false];
+var sourceAu = [
+	'/static/audio/KD_right.wav', 
+	'/static/audio/KD_sai.wav', 
+	'/static/audio/KD_VD_sau_phần_thi.wav', 
+	'/static/audio/KD_bắt_đầu.wav', 
+	'/static/audio/KD_start.wav', 
+	'/static/audio/KD_60s.wav'
+];
+var indexAu = [
+	'correct',
+	'wrong',
+	'done',
+	'start',
+	'open',
+	'60s'
+]
 
 socket.on("disconnect",function(){
 	socket.connect();
@@ -16,27 +33,57 @@ socket.on("disconnect",function(){
 // 	alert("connected!");
 // })
 
+var sfx = {	
+	'correct': new Audio,
+	'wrong': new Audio,
+	'done': new Audio,
+	'start': new Audio,
+	'open': new Audio,
+	'60s': new Audio
+}
+
+function loadau(idaudio){
+	var url = sourceAu[idaudio];
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", url, true);
+	xhr.responseType = "arraybuffer";
+	xhr.onload = function(oEvent) {
+		var blob = new Blob([oEvent.target.response], {type: "audio/wav"});
+		console.log('loaded ' + indexAu[idaudio]);
+		sfx[indexAu[idaudio]].src = URL.createObjectURL(blob);
+		loadedAu[idaudio] = true;
+	};
+	xhr.send();
+}
+
+const checksound = () => {
+	for(var i = 0; i < 6; i++){
+		if(!loadedAu[i]){
+			setTimeout(() => {
+				checksound();
+			}, 2000);
+			return;
+		}
+	}
+	send_mess("viewer", "controller", "sound_ok")
+	console.log('Check sound ok')
+	statusSound = true;
+}
+
+for(var i = 0; i < 6; i++) loadau(i);
+checksound();
+
 function b64EncodeUnicode(str) {
-  return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
-    function toSolidBytes(match, p1) {
-      return String.fromCharCode('0x' + p1);
-  }));
+	return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+		function toSolidBytes(match, p1) {
+		return String.fromCharCode('0x' + p1);
+	}));
 }
 
 function b64DecodeUnicode(str) {
-  return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
-    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-  }).join(''))
-}
-
-
-var sfx = {	
-	'correct': new Audio('/static/audio/KD_right.wav'),
-	'wrong': new Audio('/static/audio/KD_sai.wav'),
-	'done': new Audio('/static/audio/KD_VD_sau_phần_thi.wav'),
-	'start': new Audio('/static/audio/KD_bắt_đầu.wav'),
-	'open': new Audio('/static/audio/KD_start.wav'),
-	'60s': new Audio('/static/audio/KD_60s.wav')
+	return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
+		return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+	}).join(''))
 }
 
 const nextques=function(){
@@ -55,31 +102,16 @@ const nextques=function(){
 		sfx['60s'].currentTime = 0;
 	}
 	else{
-	// if (ids > 3) {
-	// 	disabled(correctb);
-	// 	disabled(wrongb);
-	// 	// disabled(nextques);
-	// 	question.html("Done");
-	// }
-	console.log({ids: ids, idq: idq});
-	question.html(questions[ids][idq]);
+		// if (ids > 3) {
+		// 	disabled(correctb);
+		// 	disabled(wrongb);
+		// 	// disabled(nextques);
+		// 	question.html("Done");
+		// }
+		console.log({ids: ids, idq: idq});
+		question.html(questions[ids][idq]);
+	};
 };
-};
-
-const checksound = () => {
-	var ok = 1;
-	Object.keys(sfx).map(s => {ok = ok && (sfx[s].readyState === 4);})
-	if(ok){
-		send_mess("viewer", "controller", "sound_ok")
-		console.log('Check sound ok')
-		statusSound = true;
-	}
-	else{
-		setTimeout(() => {checksound()}, 2000)
-	}
-}
-
-checksound()
 
 const actived = (index) => {
 	if (index < 5)
@@ -128,9 +160,6 @@ const start=function() {
 		});
 		$('#timer_slider').animate({opacity:'0'},1000);
 	},8000);
-
-	//alert('ok');
-	//tick(60);
 };
 
 async function send_mess(sender,receiver,content){
@@ -170,7 +199,6 @@ const update = async () => {
 				question.html("Phần thi khởi động của " + contestants[ids].name);
 				for(index in contestants){
 					let element=$(`#contestant${parseInt(parseInt(index)+1)}`);
-					//let element    = $(`#contestant_${parseInt(index) + 1}`);
 					let contestant=contestants[index];
 					element.html(`${contestant.name} (${contestant.score})`);
 					$("#name" + parseInt(parseInt(index) + 1)).html(contestants[index].name);
@@ -286,7 +314,3 @@ socket.on("message",(msg) => {
 if(window.outerWidth < 1200){
 	$("#scoretab").hide()
 }
-
-$(document).ready(function(){
-	update()
-});

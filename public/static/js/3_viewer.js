@@ -58,26 +58,60 @@ function precisionRound(number, precision) {
 	return Math.round(number * factor) / factor;
 }
 
-var sfx = {	'correct': new Audio('/static/audio/TT_đúng.wav'),
-			'showques': new Audio('/static/audio/TT_mở_câu_hỏi.wav'),
-			'showans_pre': new Audio('/static/audio/TT_đáp_án.wav'),
-			'showans': new Audio('/static/audio/TT_kết_quả_next.wav'),
-			'30s': new Audio('/static/audio/TT_30s.wav')
-		}
+var loadedAu = [false, false, false, false, false];
+var sourceAu = [
+	'/static/audio/TT_đúng.wav',
+	'/static/audio/TT_mở_câu_hỏi.wav',
+	'/static/audio/TT_đáp_án.wav',
+	'/static/audio/TT_kết_quả_next.wav',
+	'/static/audio/TT_30s.wav'
+]
+var indexAu = [
+	'correct',
+	'showques',
+	'showans_pre',
+	'showans',
+	'30s'
+]
 
-const checksound = () => {
-	var ok = 1;
-	Object.keys(sfx).map(s => ok = ok && (sfx[s].readyState === 4))
-	if(ok){
-		send_mess("viewer", "controller", "sound_ok")
-		statusSound = true;
-	}
-	else{
-		setTimeout(() => {checksound()}, 2000)
-	}
+var sfx = {	
+	'correct': new Audio,
+	'showques': new Audio,
+	'showans_pre': new Audio,
+	'showans': new Audio,
+	'30s': new Audio
 }
 
-checksound()
+function loadau(idaudio){
+	var url = sourceAu[idaudio];
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", url, true);
+	xhr.responseType = "arraybuffer";
+	xhr.onload = function(oEvent) {
+		var blob = new Blob([oEvent.target.response], {type: "audio/wav"});
+		console.log('loaded ' + indexAu[idaudio]);
+		sfx[indexAu[idaudio]].src = URL.createObjectURL(blob);
+		loadedAu[idaudio] = true;
+	};
+	xhr.send();
+}
+
+const checksound = () => {
+	for(var i = 0; i < 5; i++){
+		if(!loadedAu[i]){
+			setTimeout(() => {
+				checksound();
+			}, 2000);
+			return;
+		}
+	}
+	send_mess("viewer", "controller", "sound_ok")
+	console.log('Check sound ok')
+	statusSound = true;
+}
+
+for(var i = 0; i < 5; i++) loadau(i);
+checksound();
 
 // function check(){
 // 	if(vid.readyState === 4){
