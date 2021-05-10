@@ -2,7 +2,7 @@
   "name": "tlo",
   "version": "1.0.0",
   "description": "LQDKH",
-  "main": "server.exe",
+  "main": "server.js",
   "dependencies": {
     "body-parser": "^1.19.0",
     "engine.io": "^3.5.0",
@@ -10,6 +10,8 @@
     "express": "^4.17.1",
     "fs": "^0.0.1-security",
     "http": "^0.0.0",
+    "local-ipv4-address": "0.0.2",
+    "nexe": "^4.0.0-beta.18",
     "path": "^0.12.7",
     "socket.io": "^2.4.1",
     "socket.io-client": "^4.0.1"
@@ -17,7 +19,8 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "build": "nexe"
   },
   "repository": {
     "type": "git",

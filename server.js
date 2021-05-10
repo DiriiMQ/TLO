@@ -5,9 +5,13 @@ const http = require("http")
 const fs = require("fs")
 const _path = require('path')
 const bodyParser = require('body-parser')
+const localIpV4Address = require("local-ipv4-address")
 
-const server = http.createServer(app).listen(3000, () => {
-	console.log("Running")
+const server = http.createServer(app).listen(80, () => {
+	localIpV4Address().then(function(ipAddress){
+		console.log(ipAddress)
+		console.log("Running")
+	})
 })
 
 const io = require("socket.io").listen(server)
@@ -102,7 +106,7 @@ app.get('/apix/read_file', (req, res) => {
 })
 
 app.get('/test', (req, res) => {
-	return res.sendFile(__dirname + '/test.html')
+	return res.sendFile(__dirname + '/public/templates/test.html')
 })
 
 app.post('/apix/read_file', (req, res) => {
