@@ -787,7 +787,7 @@ const round_three = {
 		if(round_three.questions.length == 0){
 			alert("Load câu hỏi đeee");
 			return;
-		}
+		}   
 		if(curques == -1 || curround != 2 || curques != $("#curques_edit").val()){
 			alert("Kiểm tra overall status đeeee");
 			return;
@@ -825,7 +825,7 @@ const round_four = {
 	scs: [10, 20, 30],
 	// time:[[10,10,15],[10,15,20],[15,20,20]],
 	time: [10, 15, 20],
-	taker : -1,
+	taker : -1, //thang cuop quyen tra loi
 	star : false,
 	update_status:function(){
 		$("#choosepack").val(curpack);
@@ -843,7 +843,7 @@ const round_four = {
 			}
 		}
 		catch(err){
-			console.log("Error"+err);
+			console.log("Error "+err);
 		}
 	},
 	save_question: function(){

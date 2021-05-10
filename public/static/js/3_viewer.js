@@ -73,7 +73,6 @@ var indexAu = [
 	'showans',
 	'30s'
 ]
-
 var sfx = {	
 	'correct': new Audio,
 	'showques': new Audio,
