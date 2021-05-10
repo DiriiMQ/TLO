@@ -8,8 +8,9 @@ var hope=false;
 var contestants=[];
 var questions=[];
 var pks=[10,20,30];
-var time=[[10,10,15],[10,15,20],[15,20,20]];
+var time=[10,15,20];
 var curpack, curcon, curques, quesid;
+var totalques = 0;
 $("#star").hide();
 
 function b64EncodeUnicode(str) {
@@ -100,7 +101,7 @@ function update(){
 				}
 				actived(parseInt(curcon)+1);
 				try{
-					question.html(questions[curcon][curpack][curques]);
+					// question.html(questions[curcon][curpack][curques]);
 					score.html(contestants[curcon].score);
 					pack.html(pks[curpack] + ' điểm');
 				}
@@ -132,7 +133,7 @@ function showques(){
 }
 
 function start(){
-	$("#timer_slider").animate({width:"900px"},time[curpack][curques]*1000,"linear");
+	$("#timer_slider").animate({width:"900px"},time[curpack]*1000,"linear");
 	$("#timer_slider").animate({opacity:"0"},1000,"linear");
 }
 
@@ -168,9 +169,8 @@ function correct(){
 }
 
 function nextques(){
-	curques++;
-	if(curques<3){
-		question.html("Câu hỏi thứ "+parseInt(parseInt(curques)+1));
+	if(totalques<3){
+		question.html("Câu hỏi thứ "+parseInt(parseInt(totalques)+1));
 	}
 	else{
 		question.html(contestants[curcon].name + " đã hoàn thành phần thi về đích")
@@ -213,6 +213,9 @@ socket.on("message",(msg) => {
 			case "test":send_mess(boku,"controller","ok");
 			break;
       default:
+		if(content.startsWith("totalques")){
+			totalques = parseInt(content.replace("totalques", ""));
+		}
         if (content.startsWith("match")) curmatch = content.replace("match","");
 		};
 		if(content.slice(0,4)=="pack"){

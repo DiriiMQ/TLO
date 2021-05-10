@@ -95,7 +95,9 @@
 									text: parseInt(i)+1
 								}));
 							};
-							enabled(pack);
+							disabled(pack);
+							disabled(ques);
+							disabled(con);
 						}
 						break;
 					case "4":
@@ -524,14 +526,14 @@
 								</select>
 								<button id="pack_btn" class="form-control" style="float: left;padding-top: 3px;background-color: #00b300;font-weight: bold;color: white;margin-left: 10px;height: 30px;width: 200px;border-width: 0px;" onmouseover="this.style.background='#00ff00';" onmouseout="this.style.background='#00b300';" onclick="round_four.choosepack();">Chọn gói câu hỏi</button>
 							</div>
-							<button id="showques_4_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #002699;font-weight: bold;border-width: 0px;color: white;" onmouseover="this.style.background='#0039e6';" onmouseout="this.style.background='#002699';" onclick="round_four.showques();"><i class="fa fa-info-circle"></i> Hiện câu hỏi</button>
-							<button id="start_4_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #002699;font-weight: bold;border-width: 0px;color: white;margin-left:20px;" onmouseover="this.style.background='#0039e6';" onmouseout="this.style.background='#002699';" onclick="round_four.start();"><i class="fa fa-play"></i> Bắt đầu</button>
+							<button id="showques_4_btn" disabled="true" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #002699;font-weight: bold;border-width: 0px;color: white;" onmouseover="this.style.background='#0039e6';" onmouseout="this.style.background='#002699';" onclick="round_four.showques();"><i class="fa fa-info-circle"></i> Hiện câu hỏi</button>
+							<button id="start_4_btn" disabled="true" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #002699;font-weight: bold;border-width: 0px;color: white;margin-left:20px;" onmouseover="this.style.background='#0039e6';" onmouseout="this.style.background='#002699';" onclick="round_four.start();"><i class="fa fa-play"></i> Bắt đầu</button>
 						</div>
 						<button id="true_4_btn" disabled="true" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #00b300;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;margin-top: 10px;" onmouseover="this.style.background='#00ff00';" onmouseout="this.style.background='#00b300';" onclick="round_four.correct();"><i class="fa fa-check"></i> Đúng</button>
 						<button id="false_4_btn" disabled="true" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #ff0000;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;margin-top: 10px;" onmouseover="this.style.background='#ff4d4d';" onmouseout="this.style.background='#ff0000';" onclick="round_four.wrong();"><i class="fa fa-times"></i> Sai</button>
 						<button id="hope_4_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #ffcc00;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;margin-top: 10px;" onmouseover="this.style.background='#ffe066';" onmouseout="this.style.background='#ffcc00';" onclick="round_four.hope();">NSHV <i class="fa fa-star"></i></button>
-						<button id="waitttt_4_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #3399ff;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;margin-top: 10px;" onmouseover="this.style.background='#80bfff';" onmouseout="this.style.background='#3399ff';" onclick="round_four.wait();"><i class="fas fa-clock"></i> 5s Waiting</button>
-						<button id="vidpls_4_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #3399ff;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;margin-top: 10px;" onmouseover="this.style.background='#80bfff';" onmouseout="this.style.background='#3399ff';" onclick="round_four.showvid();"><i class="fas fa-info-circle"></i> Hiện video</button>
+						<button id="waitttt_4_btn" disabled="true" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #3399ff;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;margin-top: 10px;" onmouseover="this.style.background='#80bfff';" onmouseout="this.style.background='#3399ff';" onclick="round_four.wait();"><i class="fas fa-clock"></i> 5s Waiting</button>
+						<button id="vidpls_4_btn" disabled="true" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #3399ff;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;margin-top: 10px;" onmouseover="this.style.background='#80bfff';" onmouseout="this.style.background='#3399ff';" onclick="round_four.showvid();"><i class="fas fa-info-circle"></i> Hiện video</button>
 						<button id="nextques_4_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #3399ff;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;margin-top: 10px;" onmouseover="this.style.background='#80bfff';" onmouseout="this.style.background='#3399ff';" onclick="round_four.nextques();">Câu tiếp theo <i class="fa fa-arrow-right"></i></button>
 						<button id="next_4_btn" class="form-control" style="float: left;width: 150px;height: 50px;background-color: #ffcc00;font-weight: bold;border-width: 0px;color: white;margin-left: 20px;margin-top: 10px;" onmouseover="this.style.background='#ffe066';" onmouseout="this.style.background='#ffcc00';" onclick="round_four.next();">Đứa khác :v <i class="fa fa-arrow-right"></i></button>
 						<div style="float: left;margin-top: 10px;width:500px;">

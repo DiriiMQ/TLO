@@ -8,6 +8,7 @@ var contestants=[];
 var questions=[];
 var pks=[10,20,30];
 var time=[10,15,20];
+var totalques = 0;
 var curcon, curpack, curques, quesid, curmatch;
 $("#star").hide();
 
@@ -131,7 +132,7 @@ async function update(){
   		}
   		actived(parseInt(curcon)+1);
   		try{
-  			question.html(questions[curcon][curpack][curques]);
+  			// question.html(questions[curcon][curpack][curques]);
   			score.html(contestants[curcon].score);
   			pack.html("Gói "+pks[curpack]);
   		}
@@ -206,10 +207,9 @@ function correct(){
 }
 
 function nextques(){
-	curques++;
 	fuck = 0;
-	if(curques<3){
-		question.html("Câu hỏi thứ "+parseInt(parseInt(curques)+1));
+	if(totalques<3){
+		question.html("Câu hỏi thứ "+parseInt(parseInt(totalques)+1));
 	}
 	else{
 		question.html(contestants[curcon].name + " đã hoàn thành phần thi về đích")
@@ -319,6 +319,9 @@ socket.on("message",(msg) => {
       break;
       default:
         console.log("Fuck: "+content);
+		if(content.startsWith("totalques")){
+			totalques = parseInt(content.replace("totalques", ""));
+		}
         if (content.startsWith("pack")) curpack = parseInt(content.slice(-1));
         if (content.startsWith("chooseques")) quesid = parseInt(content.slice(-1));
         if (content.startsWith("match")) curmatch = content.replace("match","");

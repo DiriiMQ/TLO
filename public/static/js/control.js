@@ -817,8 +817,17 @@ const round_three = {
 	}
 }
 
+const checkUrl = (url) => {
+	var request = new XMLHttpRequest();
+	request.open('GET', url, false);
+	request.send();
+	if (request.status === 404) return false;
+	else return true;
+}
+
 const round_four = {
 	quesid: 0,
+	totalques: 0,
 	questions: [],
 	done: [0, 0, 0, 0],
 	// scs:[[10,10,20],[10,20,30],[20,30,30]],
@@ -829,13 +838,13 @@ const round_four = {
 	star : false,
 	update_status:function(){
 		$("#choosepack").val(curpack);
-		$("#numques4").html(parseInt(parseInt(curques)+1));
+		$("#numques4").html(parseInt(parseInt(this.totalques)+1));
 		for(var i=1;i<=4;i++){
 			document.getElementById("stt"+i+"_tab").style.background="";
 		}
 		try{
 			document.getElementById("stt"+parseInt(parseInt(curcon)+1)+"_tab").style.background="#00b300";
-			if(curques<3){
+			if(this.totalques<3){
 				$("#ques_4").html(round_four.questions[curcon][curpack][curques]);
 			}
 			else{
@@ -879,8 +888,16 @@ const round_four = {
 	},
 	showvid: function() {
 		send_mess("controller","viewer","showvid");
+		enabled($("#start_4_btn"));
 	},
 	next:function(){
+		if(curround != 3){
+			alert("Kiểm tra overall status đeee");
+			return;
+		}
+		disabled($("#true_4_btn"));disabled($("#false_4_btn"));disabled($("#waitttt_4_btn"));
+		disabled($("#vidpls_4_btn"));disabled($("#start_4_btn"));disabled($("#showques_4_btn"));
+		$("#ques_4").html("Chọn gói và câu hỏi");
 		var tmp = [];
 		for(var i = 0; i < 4; i++){
 			tmp.push([contestants[i], i]);
@@ -898,6 +915,7 @@ const round_four = {
 		console.log(round_four.done);
 		curques=-1;
 		curpack=0;
+		this.totalques = 0;
 		$("#curcon_edit").val(curcon);
 		for(var i=1;i<=4;i++){
 			document.getElementById("stt"+i+"_tab").style.background="";
@@ -908,14 +926,25 @@ const round_four = {
 		else{
 			$("#ques_4").html("よしししししししし！");
 		}
-		send_mess("controller","contestants","next");
-		send_mess("controller","viewer","next");
+		send_mess("controller", "viewer", "totalques" + this.totalques);
+		send_mess("controller", "contestants", "totalques" + this.totalques);
+		save_status();
+		send_mess("controller","contestants","update");
+		send_mess("controller","viewer","update");
 		enabled($("#hope_4_btn"));
 	},
 	showpack:function(){
 		send_mess("controller","viewer","showpack");
 	},
 	choosepack:function(){
+		if(round_four.questions.length == 0){
+			alert("Load câu hỏi đeee");
+			return;
+		}
+		if(curround != 3 || curcon == -1){
+			alert("Kiểm tra overall status đeeee");
+			return;
+		}
 		send_mess("controller","contestants","pack"+$("#choosepack").val());
 		send_mess("controller","viewer","pack"+$("#choosepack").val());
 		curpack=$("#choosepack").val();
@@ -928,6 +957,9 @@ const round_four = {
 		$("#curques_edit").val(curques);
 	},
 	showques:function(){
+		if(checkUrl(`/static/video/${curmatch}_${parseInt(curcon)+1}_${parseInt(curpack)+1}_${round_four.quesid+1}.mp4`)){
+			enabled($("#vidpls_4_btn"));
+		} else enabled($("#start_4_btn"));
 		send_mess("controller","contestants","showques");
 		send_mess("controller","viewer","showques");
 		disabled($("#true_4_btn"));disabled($("#false_4_btn"));disabled($("#waitttt_4_btn"));
@@ -996,12 +1028,17 @@ const round_four = {
 		send_mess("controller","viewer","hope");
 	},
 	nextques:function(){
+		disabled($("#true_4_btn"));disabled($("#false_4_btn"));disabled($("#waitttt_4_btn"));
+		disabled($("#vidpls_4_btn"));disabled($("#start_4_btn"));disabled($("#showques_4_btn"));
 		round_four.star=false;
-		curques++;
+		if(this.totalques<3) this.totalques++;
+		send_mess("controller", "viewer", "totalques" + this.totalques);
+		send_mess("controller", "contestants", "totalques" + this.totalques);
+		// disabled
 		$("#curques_edit").val(curques);
-		$("#numques4").html(parseInt(parseInt(curques)+1));
-		if(curques<3){
-			$("#ques_4").html(round_four.questions[curcon][curpack][round_four.quesid]);
+		$("#numques4").html(parseInt(parseInt(this.totalques)+1));
+		if(this.totalques<3){
+			$("#ques_4").html("Chọn gói và câu hỏi");
 		}
 		else{
 			$("#ques_4").html("Done");
@@ -1024,7 +1061,9 @@ const round_four = {
 		send_mess('controller', 'mc', 'chooseques'+id);
 		send_mess('controller', 'viewer', 'chooseques'+id);
 		round_four.quesid = id;
+		$("#curques_edit").val(id);
 		$("#ques_4").html(round_four.questions[curcon][curpack][round_four.quesid]);
+		enabled($("#showques_4_btn"));
 	},
 }
 
