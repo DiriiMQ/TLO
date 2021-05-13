@@ -9,7 +9,8 @@ var questions=[];
 var pks=[10,20,30];
 var time=[10,15,20];
 var totalques = 0;
-var curcon, curpack, curques, quesid, curmatch;
+var curcon, curpack, curques, quesid, curmatch, fuck;
+var statusSound = false;
 $("#star").hide();
 
 function b64EncodeUnicode(str) {
@@ -53,35 +54,90 @@ socket.on("disconnect",function(){
 	socket.connect();
 })
 
-var sfx = {	'wrong': new Audio('/static/audio/VD_sai.wav'),
-			'correct': new Audio('/static/audio/VD_đúng.wav'),
-			'showques': new Audio('/static/audio/TT_mở_câu_hỏi.wav'),
-			'showans_pre': new Audio('/static/audio/TT_đáp_án.wav'),
-			'showans': new Audio('/static/audio/TT_kết_quả_next.wav'),
-			'showpack_pre': new Audio('/static/audio/VD_lên_bục.wav'),
-			'showpack': new Audio('/static/audio/VD_chọn_gói.wav'),
-			'start': new Audio('/static/audio/VD_vào_thi.wav'),
-			'10': new Audio('/static/audio/VD_10s.wav'),
-			'15': new Audio('/static/audio/VD_15s.wav'),
-			'20': new Audio('/static/audio/VD_20s.wav'),
-			'wait': new Audio('/static/audio/VD_chờ_giành.wav'),
-			'star': new Audio('/static/audio/VD_NSHV.wav'),
-			'fu': new Audio('/static/audio/VD_giành.wav'),
-			'done': new Audio('/static/audio/VD_chúc_mừng.wav'),
+var loadedAu = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
+var sourceAu = [
+	'/static/audio/VD_sai.wav',
+	'/static/audio/VD_đúng.wav',
+	'/static/audio/TT_mở_câu_hỏi.wav',
+	'/static/audio/TT_đáp_án.wav',
+	'/static/audio/TT_kết_quả_next.wav',
+	'/static/audio/VD_lên_bục.wav',
+	'/static/audio/VD_chọn_gói.wav',
+	'/static/audio/VD_vào_thi.wav',
+	'/static/audio/VD_10s.wav',
+	'/static/audio/VD_15s.wav',
+	'/static/audio/VD_20s.wav',
+	'/static/audio/VD_chờ_giành.wav',
+	'/static/audio/VD_NSHV.wav',
+	'/static/audio/VD_giành.wav',
+	'/static/audio/VD_chúc_mừng.wav'
+]
+var indexAu = [
+	'wrong',
+	'correct',
+	'showques',
+	'showans_pre',
+	'showans',
+	'showpack_pre',
+	'showpack',
+	'start',
+	'10',
+	'15',
+	'20',
+	'wait',
+	'star',
+	'fu',
+	'done'
+]
+
+var sfx = {	
+	'wrong': new Audio,
+	'correct': new Audio,
+	'showques': new Audio,
+	'showans_pre': new Audio,
+	'showans': new Audio,
+	'showpack_pre': new Audio,
+	'showpack': new Audio,
+	'start': new Audio,
+	'10': new Audio,
+	'15': new Audio,
+	'20': new Audio,
+	'wait': new Audio,
+	'star': new Audio,
+	'fu': new Audio,
+	'done': new Audio
+}
+
+function loadau(idaudio){
+	var url = sourceAu[idaudio];
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", url, true);
+	xhr.responseType = "arraybuffer";
+	xhr.onload = function(oEvent) {
+		var blob = new Blob([oEvent.target.response], {type: "audio/wav"});
+		console.log('loaded ' + indexAu[idaudio]);
+		sfx[indexAu[idaudio]].src = URL.createObjectURL(blob);
+		loadedAu[idaudio] = true;
+	};
+	xhr.send();
 }
 
 const checksound = () => {
-	var ok = 0;
-	Object.keys(sfx).map(s => ok = ok && (sfx[s].readyState === 4))
-	if(ok){
-		send_mess("viewer", "controller", "sound_ok")
+	for(var i = 0; i < 15; i++){
+		if(!loadedAu[i]){
+			setTimeout(() => {
+				checksound();
+			}, 2000);
+			return;
+		}
 	}
-	else{
-		setTimeout(() => {checksound()}, 2000)
-	}
+	send_mess("viewer", "controller", "sound_ok")
+	console.log('Check sound ok')
+	statusSound = true;
 }
 
-checksound()
+for(var i = 0; i < 15; i++) loadau(i);
+checksound();
 
 disabled(takeb);
 
@@ -112,39 +168,59 @@ const actived = (index) => {
 
 
 async function update(){
-  if (curmatch!= void 0) {
-  	await _fetch("/apix/read_file",{file:`static/data/${curmatch}_status.txt`}).then((res) => {
-  		res = b64DecodeUnicode(res);
-  		res = JSON.parse(res);
-  		curcon=res[0].curcon;
-  		curpack=res[0].curpack;
-  		curques=res[0].curques;
-  		console.log(curcon+" "+curpack+" "+curques);
-  	})
-  	await loadques()
-  	await _fetch("/apix/read_file",{file:`static/data/${curmatch}_contestants.txt`}).then((res) => {
-  		res = b64DecodeUnicode(res);
-  		contestants= JSON.parse(res);
-  		for(index in contestants){
-  			$("#contestant"+parseInt(parseInt(index)+1)).html(contestants[index].name+" ("+contestants[index].score+")");
-  			$("#name"+parseInt(parseInt(index)+1)).html(contestants[index].name);
-  			$("#score"+parseInt(parseInt(index)+1)).html(contestants[index].score);
-  		}
-  		actived(parseInt(curcon)+1);
-  		try{
-  			// question.html(questions[curcon][curpack][curques]);
-  			score.html(contestants[curcon].score);
-  			pack.html("Gói "+pks[curpack]);
-  		}
-  		catch(err){}
-  	})
-  }
+	if(curmatch == undefined){
+		send_mess("viewer", "controller", "get_curmatch");
+		setTimeout(() => {
+			update();
+		}, 2000);
+	} else{
+		await _fetch("/apix/read_file",{file:`static/data/${curmatch}_status.txt`}).then((res) => {
+			res = b64DecodeUnicode(res);
+			res = JSON.parse(res);
+			curcon=res[0].curcon;
+			curpack=res[0].curpack;
+			curques=res[0].curques;
+			send_mess("viewer", "controller", "confirmed");
+			console.log(curcon+" "+curpack+" "+curques);
+		})
+		// await loadques()
+		await _fetch("/apix/read_file",{file:`static/data/${curmatch}_contestants.txt`}).then((res) => {
+			res = b64DecodeUnicode(res);
+			contestants= JSON.parse(res);
+			for(index in contestants){
+				$("#contestant"+parseInt(parseInt(index)+1)).html(contestants[index].name+" ("+contestants[index].score+")");
+				$("#name"+parseInt(parseInt(index)+1)).html(contestants[index].name);
+				$("#score"+parseInt(parseInt(index)+1)).html(contestants[index].score);
+			}
+			actived(parseInt(curcon)+1);
+			try{
+				// question.html(questions[curcon][curpack][curques]);
+				score.html(contestants[curcon].score);
+				pack.html("Gói "+pks[curpack]);
+			}
+			catch(err){}
+		})
+	}
 }
 
 function loadques(){
+	if(curmatch == undefined){
+		send_mess("viewer", "controller", "failed_loadques");
+		send_mess("viewer", "controller", "get_curmatch");
+		setTimeout(() => {
+			console.log(curmatch);
+			update();
+		}, 2000);
+		return;
+	}
 	(curmatch!= void 0) && _fetch("/apix/read_file",{file:`static/data/${curmatch}_4_question.txt`}).then((res) => {
 		res = b64DecodeUnicode(res);
 		questions= JSON.parse(res);
+		if(questions.length > 0){
+			send_mess("viewer", "controller", "loaded_ques");
+		} else{
+			send_mess("viewer", "controller", "failed_loadques");
+		}
 	});
 }
 
@@ -155,7 +231,7 @@ function next(){
 }
 
 function showques(){
-	question.html(questions[curcon][curpack][quesid]);
+	question.html(questions[curcon][curpack][curques]);
 }
 
 function start(){
@@ -309,22 +385,28 @@ socket.on("message",(msg) => {
 			break;
 			case "fu":fu(sender);
 			break;
-			case "test":send_mess("viewer","controller","ok");
+			case "test":{
+				send_mess("viewer","controller","ok");
+				if(questions.length == 0) send_mess("viewer", "controller", "failed_loadques");
+				else send_mess("viewer", "controller", "loaded_ques");
+				if(statusSound) send_mess("viewer", "controller", "sound_ok");
+				else send_mess("viewer", "controller", "loading_sound");
+			};
 			break;
 			case "showpack":showpack()
 			break;
-      case "showques": showques();
-      break;
-      case "showvid": loadVid();
-      break;
-      default:
-        console.log("Fuck: "+content);
-		if(content.startsWith("totalques")){
-			totalques = parseInt(content.replace("totalques", ""));
-		}
-        if (content.startsWith("pack")) curpack = parseInt(content.slice(-1));
-        if (content.startsWith("chooseques")) quesid = parseInt(content.slice(-1));
-        if (content.startsWith("match")) curmatch = content.replace("match","");
+			case "showques": showques();
+			break;
+			case "showvid": loadVid();
+			break;
+			default:
+				console.log("Fuck: "+content);
+				if(content.startsWith("totalques")){
+					totalques = parseInt(content.replace("totalques", ""));
+				}
+				if (content.startsWith("pack")) curpack = parseInt(content.slice(-1));
+				if (content.startsWith("chooseques")) quesid = parseInt(content.slice(-1));
+				if (content.startsWith("match")) curmatch = content.replace("match","");
 		};
 		if(content.slice(0,4)=="pack"){
 			curpack=parseInt(content.slice(4,content.length));
@@ -354,6 +436,6 @@ socket.on("message",(msg) => {
 	}
 })
 
-$(document).ready(() => {
-	(curmatch!= void 0) && update();
-})
+// $(document).ready(() => {
+// 	(curmatch!= void 0) && update();
+// })

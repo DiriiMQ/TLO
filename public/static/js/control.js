@@ -837,14 +837,22 @@ const round_four = {
 	taker : -1, //thang cuop quyen tra loi
 	star : false,
 	update_status:function(){
+		// if(round_four.questions.length == 0){
+		// 	alert("Load câu hỏi đeee");
+		// 	return;
+		// }
 		$("#choosepack").val(curpack);
 		$("#numques4").html(parseInt(parseInt(this.totalques)+1));
 		for(var i=1;i<=4;i++){
 			document.getElementById("stt"+i+"_tab").style.background="";
 		}
 		try{
-			document.getElementById("stt"+parseInt(parseInt(curcon)+1)+"_tab").style.background="#00b300";
-			if(this.totalques<3){
+			if(curcon > -1) document.getElementById("stt"+parseInt(parseInt(curcon)+1)+"_tab").style.background="#00b300";
+			if(curques == -1){
+				if(curcon == -1) $("#ques_4").html("Vòng thi về đích");
+				else $("#ques_4").html(`Vòng về đích của ${contestants[curcon].name} bắt đầu!`);
+			}
+			else if(this.totalques<3){
 				$("#ques_4").html(round_four.questions[curcon][curpack][curques]);
 			}
 			else{
@@ -879,6 +887,7 @@ const round_four = {
 		$("#load_ques_4_btn").click();
 	},
 	load_question:function(){
+		console.log("Controller load ques");
 		_fetch("/apix/read_file", {file: `/static/data/${curmatch}_4_question.txt`}).then((callback) => {
 			round_four.questions=b64DecodeUnicode(callback);
 			round_four.questions=JSON.parse(round_four.questions);
@@ -965,6 +974,10 @@ const round_four = {
 		disabled($("#true_4_btn"));disabled($("#false_4_btn"));disabled($("#waitttt_4_btn"));
 	},
 	start:function(){
+		$("#choosevd").empty()
+		$("#choosevd").append($('<option',{
+			text: '-'
+		}))
 		send_mess("controller","contestants","start");
 		send_mess("controller","viewer","start");
 		tick(round_four.time[curpack],$("#timer_4"));
@@ -1154,7 +1167,8 @@ socket.on("message",function(msg){
 			break;
 			case "get_curmatch":{
 				send_mess("controller", sender, "match"+curmatch);
-				writeLog("is reconnecting", sender);
+				writeLog("is connecting", sender);
+				if(round_four.star) send_mess("controller", "viewer", "hope");
 			};
 			break;
 			case "loaded_ques":{
@@ -1228,6 +1242,7 @@ socket.on("message",function(msg){
 				{
 					if(curround == 3){
 						if(round_four.taker==-1){
+							send_mess(sender,"viewer","fu");
 							round_four.taker=parseInt(sender);
 							document.getElementById("stt"+parseInt(parseInt(round_four.taker)+1)+"_tab").style.background="#ff8000";
 							$("#choosevd").append($(`<option>`,{

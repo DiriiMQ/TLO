@@ -81,12 +81,18 @@ const actived = (index) => {
 
 
 function update(){
-	(curmatch!= void 0) && _fetch("/apix/read_file",{file:`static/data/${curmatch}_status.txt`}).then((res) => {
+	if(curmatch == undefined){
+		send_mess(boku, "controller", "get_curmatch");
+		setTimeout(() => {
+			update();
+		}, 2000);
+	} else (curmatch!= void 0) && _fetch("/apix/read_file",{file:`static/data/${curmatch}_status.txt`}).then((res) => {
 		res = b64DecodeUnicode(res);
 		res = JSON.parse(res);
 		curcon=res[0].curcon;
 		curpack=res[0].curpack;
 		curques=res[0].curques;
+		send_mess(boku, "controller", "confirmed");
 		console.log(curcon+" "+curpack+" "+curques);
 		_fetch("/apix/read_file",{file:`static/data/${curmatch}_4_question.txt`}).then((res) => {
 			res = b64DecodeUnicode(res);
@@ -116,9 +122,23 @@ function update(){
 }
 
 function loadques(){
+	if(curmatch == undefined){
+		send_mess(boku, "controller", "failed_loadques");
+		send_mess(boku, "controller", "get_curmatch");
+		setTimeout(() => {
+			console.log(curmatch);
+			update();
+		}, 2000);
+		return;
+	}
 	(curmatch!= void 0) && _fetch("/apix/read_file",{file:`static/data/${curmatch}_4_question.txt`}).then((res) => {
 		res = b64DecodeUnicode(res);
 		questions = JSON.parse(res);
+		if(questions.length > 0){
+			send_mess(boku, "controller", "loaded_ques");
+		} else{
+			send_mess(boku, "controller", "failed_loadques");
+		}
 	});
 }
 
@@ -129,7 +149,7 @@ function next(){
 }
 
 function showques(){
-	question.html(questions[curcon][curpack][quesid]);
+	question.html(questions[curcon][curpack][curques]);
 }
 
 function start(){
@@ -139,7 +159,7 @@ function start(){
 
 function wait(){
 	if(curcon != boku) enabled(takeb);
-	setTimeout(function() {disabled(takeb);}, 5000);
+	setTimeout(function() {disabled(takeb); console.log("end click");}, 5000);
 }
 
 function wrong(){
@@ -179,8 +199,9 @@ function nextques(){
 }
 
 function fu(){
+	console.log("click " + Date.now());
 	send_mess(boku,"controller","fu");
-	send_mess(boku,"viewer","fu");
+	// send_mess(boku,"viewer","fu");
 }
 
 socket.on("message",(msg) => {
@@ -189,7 +210,7 @@ socket.on("message",(msg) => {
 	let content=msg[0].content;
 	let sender=msg[0].sender;
 	let receiver=msg[0].receiver;
-	if(receiver=="contestants"){
+	if(receiver=="contestants" || receiver == boku){
 		//console.log(content+"-"+sender);
 		switch(content){
 			case "update":update();
@@ -210,7 +231,11 @@ socket.on("message",(msg) => {
 			break;
 			case "nextques": nextques();
 			break;
-			case "test":send_mess(boku,"controller","ok");
+			case "test":{
+				send_mess(boku,"controller","ok");
+				if(questions.length == 0) send_mess(boku, "controller", "failed_loadques");
+				else send_mess(boku, "controller", "loaded_ques");
+			};
 			break;
       default:
 		if(content.startsWith("totalques")){
