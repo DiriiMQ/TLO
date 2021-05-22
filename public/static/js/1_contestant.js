@@ -37,6 +37,13 @@ socket.on("disconnect",function(){
 	socket.connect();
 })
 
+socket.on("connect_error", () => {
+	setTimeout(() => {
+		console.log("buggggg.....");
+		socket.connect();
+	}, 1000);
+})
+
 function send_mess(sender,receiver,content){
 	return new Promise((res) => {
 		var data=[];
@@ -123,6 +130,7 @@ const update = function(){
 			console.log(res);
 			idq=res[0].curques;
 			ids=(res[0].curcon==-1)?(0):(res[0].curcon);
+			if(res[0].curround != 0) return;
 			_fetch("/apix/read_file",{
 				file:`static/data/${curmatch}_contestants.txt`
 			}).then((res) => {
@@ -202,6 +210,10 @@ socket.on('message',function(msg){
 	if(receiver == "contestants" || receiver == boku){
 		//alert("got it");
 		switch(content){
+			case "reload":{
+				window.location.reload(false);
+			};
+			break;
 			case "test":{
 				send_mess(boku,"controller","ok");
 				if(questions.length == 0) send_mess(boku, "controller", "failed_loadques");

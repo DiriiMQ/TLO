@@ -1202,6 +1202,7 @@ socket.on("message",function(msg){
 					else
 						document.getElementById("stt"+parseInt(parseInt(sender)+1)).style.background="#00ff00";
 				}
+				// writeLog(content, sender);
 			};
 			break;
 			case "loaded":{

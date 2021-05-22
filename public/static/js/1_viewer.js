@@ -1,6 +1,7 @@
 const score=$("#score");
 const question=$("#question");
 var curmatch;
+var curround;
 var contestants=[];
 var questions=[];
 var socket = io.connect("http://"+document.domain+":"+location.port);
@@ -26,11 +27,20 @@ var indexAu = [
 ]
 
 socket.on("disconnect",function(){
+	console.log("disssssss");
 	socket.connect();
 })
 
+socket.on("connect_error", () => {
+	setTimeout(() => {
+		console.log("buggggg.....");
+		socket.connect();
+	}, 1000);
+})
+
 // socket.on("connect",function(){
-// 	alert("connected!");
+// 	// alert("connected!");
+// 	console.log("voo roiii");
 // })
 
 var sfx = {	
@@ -53,7 +63,12 @@ function loadau(idaudio){
 		sfx[indexAu[idaudio]].src = URL.createObjectURL(blob);
 		loadedAu[idaudio] = true;
 	};
-	xhr.send();
+	try{
+		xhr.send();
+	} catch(err){
+		console.log("fail load " + idaudio);
+		loadau(idaudio);
+	}
 }
 
 const checksound = () => {
@@ -188,6 +203,7 @@ const update = async () => {
 				res = JSON.parse(res);
 				send_mess("viewer", "controller", "confirmed");
 				console.log(res);
+				curround = res[0].curround;
 				idq=res[0].curques;
 				ids=(res[0].curcon==-1)?(0):(res[0].curcon);
 			});
@@ -195,6 +211,7 @@ const update = async () => {
 				res = b64DecodeUnicode(res);
 				contestants = JSON.parse(res);
 				console.log(contestants);
+				if(curround != 0) return;
 				score.html(contestants[ids].score);
 				question.html("Phần thi khởi động của " + contestants[ids].name);
 				for(index in contestants){
@@ -264,6 +281,10 @@ socket.on("message",(msg) => {
 	//alert(content);
 	if(receiver=="viewer"){
 		switch(content){
+			case "reload":{
+				window.location.reload(false);
+			};
+			break;
 			case "update":{
 				update();
 			};
